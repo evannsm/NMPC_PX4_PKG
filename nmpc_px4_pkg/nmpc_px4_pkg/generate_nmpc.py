@@ -4,7 +4,7 @@ from nmpc_px4_pkg.quad_casadi_model import Quadrotor
 import importlib, sys, os
 from casadi import vertcat, horzcat, diag
 from scipy.linalg import block_diag
-
+import time
 
 class QuadrotorMPC2:
     def __init__(self, generate_c_code: bool, quadrotor: Quadrotor, horizon: float, num_steps: int):
@@ -46,8 +46,10 @@ class QuadrotorMPC2:
             except ImportError:
                 print("[acados] Compiled MPC not found. Generating now...")
                 self.generate_mpc()
-                print("[acados] Done.")
-                exit(0)
+                print("[acados] Done! Control stack should begin in two seconds...")
+                time.sleep(2)
+
+
 
     def generate_mpc(self):
         f_expl, x, u = self.quad.dynamics()
