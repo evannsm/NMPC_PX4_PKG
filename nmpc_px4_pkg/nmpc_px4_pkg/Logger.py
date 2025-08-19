@@ -11,11 +11,11 @@ class Logger:
         # print(f"Logging to: {self.full_path}")
 
         base_path = os.path.dirname(os.path.abspath(__file__))        # Get the directory where the script is located
-        base_path = os.path.join(base_path, 'data_analysis')
+        base_path = os.path.join(base_path, 'data_analysis/logs')
         print(f"logger {base_path = }")        # Print the base path
         self.filename = filename[0]        # Assuming 'filename' is passed or defined as a list
         self.full_path = os.path.join(base_path, self.filename)        # Combine the base path with the filename
-        print(f"Logging to: {self.full_path}")        # Print the full path
+        print(f"Logging to: {self.full_path}")      # Print the full path
         os.makedirs(os.path.dirname(self.full_path), exist_ok=True)        # Ensure the directory exists, and creates it if it doesn't
 
 
