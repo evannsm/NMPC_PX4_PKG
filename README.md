@@ -1,4 +1,25 @@
 # NMPC_PX4_PKG
+## How to run:
+Pre-requisites are below, complete those first before running
+1. Clone this directory into your ROS2 workspace's source directory and build:
+```bash
+cd <your_ros2_ws/src>
+git clone git@github.com:evannsm/NMPC_PX4_PKG.git
+git submodule update --recursive --init
+cd ..
+colcon build --symlink-install
+```
+2. If the above is successful, set up your PX4 SITL as per their [user guide](https://docs.px4.io/main/en/ros2/user_guide.html)
+3. Once complete:
+   - initialize your PX4 gz_x500 (or iris) SITL simulation
+   - initialize the MicroXRCEAgent
+4. With a prepared simulation and PX4-ROS2 bridge initialized, run the code:
+```bash
+ros2 run nmpc_px4_pkg nmpc_quad log.log
+```
+
+I have set up inputs from the command line for simulation/hardware as well as trajectory speed settings.
+To change the trajectory type, change `reffunc` inside the code
 
 ## Prerequisites
 
@@ -9,7 +30,7 @@ Install the following:
 
 ---
 
-## Install Steps
+## Setup Steps
 
 ### 1) Install pyJoules
 ~~~bash
