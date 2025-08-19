@@ -109,7 +109,7 @@ PY
 ~~~
 
 # Papers and their repositories:
-American Control Conference 2024
+[American Control Conference 2024](https://coogan.ece.gatech.edu/papers/pdf/cuadrado2024tracking.pdf)
 [Personal Version of Repository](https://github.com/evannsm/MoralesCuadrado_ACC2024)  
 [Official FACTSLab Repository](https://github.com/gtfactslab/MoralesCuadrado_Llanes_ACC2024)  
 
