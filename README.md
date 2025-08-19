@@ -34,8 +34,8 @@ cmake -DACADOS_WITH_QPOASES=ON ..
 make install -j4
 ```
 
-### 3) Install the ACADOS Python interface as per the [python interface instructions](https://docs.acados.org/python_interface/index.html)
-1. Install template
+### 3) Install the ACADOS Python interface
+1. Install template as per the [python interface instructions](https://docs.acados.org/python_interface/index.html)
 ~~~bash
 pip install -e <acados_root>/interfaces/acados_template
 ~~~
@@ -57,9 +57,17 @@ export ACADOS_SOURCE_DIR="$acados_root"
 cd <acados_root>/bin
 chmod +x t_renderer
 ```
+
+### 5) Run a Python example to check that everything works:
+```bash
+python3 <acados_root>/examples/acados_python/getting_started/minimal_example_ocp.py
+```
+
+If it runs and plots with no errors, you're done!
+
 ---
 
-## Verify
+## Final Verification:
 ~~~bash
 python - <<'PY'
 import acados_template, pyJoules
