@@ -118,7 +118,7 @@ Transactions on Control Systems Technology 2025
 (Official FACTSLab Repository)[https://github.com/gtfactslab/Baird_MoralesCuadrado_TRO_2025]  
 
 Transactions on Robotics 2025  
-(Personal Version of Repository)[git@github.com:evannsm/Baird_MoralesCuadrado_TRO2025.git]  
+(Personal Version of Repository)[https://github.com/evannsm/MoralesCuadrado_Baird_TCST2025]  
 (Official FACTSLab Repository)[https://github.com/gtfactslab/MoralesCuadrado_Baird_TCST2025]  
 
 # Works:
