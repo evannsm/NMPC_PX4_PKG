@@ -109,7 +109,7 @@ PY
 ~~~
 
 # Papers and their repositories:
-[American Control Conference 2024](https://coogan.ece.gatech.edu/papers/pdf/cuadrado2024tracking.pdf)
+American Control Conference 2024 - [paper here](https://coogan.ece.gatech.edu/papers/pdf/cuadrado2024tracking.pdf)  
 [Personal Version of Repository](https://github.com/evannsm/MoralesCuadrado_ACC2024)  
 [Official FACTSLab Repository](https://github.com/gtfactslab/MoralesCuadrado_Llanes_ACC2024)  
 
@@ -122,7 +122,7 @@ Transactions on Robotics 2025
 [Official FACTSLab Repository](https://github.com/gtfactslab/MoralesCuadrado_Baird_TCST2025)  
 
 # Works:
-Repositories that hold other Newton-Raphson work
-[2025_NewtonRaphson_QuadrotorComplete](https://github.com/evannsm/2025_NewtonRaphson_QuadrotorComplete)  
+Repositories that hold other Newton-Raphson work  
+[2025_NewtonRaphson_QuadrotorComplete](https://github.com/evannsm/2025_NewtonRaphson_QuadrotorComplete)    
 [Blimp_SimHardware_NR_MPC_FBL_BodyOfWork2024](https://github.com/evannsm/Blimp_SimHardware_NR_MPC_FBL_BodyOfWork2024)  
 
