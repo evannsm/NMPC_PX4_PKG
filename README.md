@@ -12,7 +12,7 @@ git submodule update --init --recursive
 cd ..
 colcon build --symlink-install
 ```
-2. If the above is successful, set up your PX4 SITL as per their [user guide](https://docs.px4.io/main/en/ros2/user_guide.html)
+2. If the above is successful (px4_msgs should take a while), set up your PX4 SITL as per their [user guide](https://docs.px4.io/main/en/ros2/user_guide.html)
 3. Once complete:
    - initialize your PX4 gz_x500 (or iris) SITL simulation
    - initialize the MicroXRCEAgent
