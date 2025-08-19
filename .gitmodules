@@ -1,0 +1,4 @@
+[submodule "px4_msgs"]
+	path = px4_msgs
+	url = git@github.com:PX4/px4_msgs.git
+	branch = release/1.15

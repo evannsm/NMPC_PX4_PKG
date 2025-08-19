@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'nmpc_quad = scripts.nmpc_px4_quad:main',
         ],
     },
 )
