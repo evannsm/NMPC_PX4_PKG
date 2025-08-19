@@ -110,16 +110,16 @@ PY
 
 # Papers and their repositories:
 American Control Conference 2024  
-(Personal Version of Repository)[https://github.com/evannsm/MoralesCuadrado_ACC2024]    
-(Official FACTSLab Repository)[https://github.com/gtfactslab/MoralesCuadrado_Llanes_ACC2024]  
+[Personal Version of Repository](https://github.com/evannsm/MoralesCuadrado_ACC2024)  
+[Official FACTSLab Repository](https://github.com/gtfactslab/MoralesCuadrado_Llanes_ACC2024)  
 
 Transactions on Control Systems Technology 2025  
-(Personal Version of Repository)[https://github.com/evannsm/MoralesCuadrado_Baird_TCST2025]  
-(Official FACTSLab Repository)[https://github.com/gtfactslab/Baird_MoralesCuadrado_TRO_2025]  
+[Personal Version of Repository](https://github.com/evannsm/MoralesCuadrado_Baird_TCST2025)  
+[Official FACTSLab Repository](https://github.com/gtfactslab/Baird_MoralesCuadrado_TRO_2025)  
 
 Transactions on Robotics 2025  
-(Personal Version of Repository)[https://github.com/evannsm/MoralesCuadrado_Baird_TCST2025]  
-(Official FACTSLab Repository)[https://github.com/gtfactslab/MoralesCuadrado_Baird_TCST2025]  
+[Personal Version of Repository](https://github.com/evannsm/MoralesCuadrado_Baird_TCST2025)  
+[Official FACTSLab Repository](https://github.com/gtfactslab/MoralesCuadrado_Baird_TCST2025)  
 
 # Works:
 Repositories that hold other Newton-Raphson work
