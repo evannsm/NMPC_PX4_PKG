@@ -1,5 +1,5 @@
 # Nonlinear NMPC for PX4-ROS2 Deployment
-This package was created during my PhD originally as a basis of comparison with the well-established and well-respected NMPC technique in order to make useful comparisons against novel control strategies (namely, Newton-Raphson Flow) developed at Georgia Tech's FACTSLab.
+This package was created during my PhD originally as a basis of comparison with the well-established and well-respected NMPC technique in order to make useful comparisons against novel control strategies (namely, Newton-Raphson Flow) developed at Georgia Tech's FACTSLab. We have compared this against the Newton-Raphson controller available in my other repository [`NRFlow_PX4_PKG`](https://github.com/evannsm/NRFlow_PX4_PKG)
 
 
 This package allows for fast, compiled NMPC computations via Acados for a quadrotor UAV running PX4 alongside the MicroXRCE ROS2 bridge. The simulation version should work well with the `gz_x500` SITL model as well as the older `iris` model. The code has CLI inputs that allow the user to switch between sim/hardware mode as well as trajectory speeds. Trajectories are hard-coded into the code. Just change the `reffunc` variable to one of the available trajectory functions inside the code.
