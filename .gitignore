@@ -1,3 +1,5 @@
 **/.vscode
 **/log
 **/__pycache__
+**/acados_generated_files
+**/data_analysis
