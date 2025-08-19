@@ -17,8 +17,12 @@ pip install pyJoules
 ~~~
 
 ### 2) Install ACADOS
-Follow the official guide to build ACADOS from source (enable shared libs):
-- https://github.com/acados/acados
+Follow the official guide to build ACADOS from source as per the [official intructions](https://docs.acados.org/installation/index.html)
+```bash
+git clone https://github.com/acados/acados.git
+cd acados
+git submodule update --recursive --init
+```
 
 ### 3) Install the ACADOS Python interface
 ~~~bash
