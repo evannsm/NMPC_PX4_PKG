@@ -1,4 +1,9 @@
-# NMPC_PX4_PKG
+# Nonlinear NMPC for PX4-ROS2 Deployment
+This package was created during my PhD originally as a basis of comparison with the well-established and well-respected NMPC technique in order to make useful comparisons against novel control strategies (namely, Newton-Raphson Flow) developed at Georgia Tech's FACTSLab.
+
+This package allows for fast, compiled NMPC computations via Acados for a quadrotor UAV running PX4 alongside the MicroXRCE ROS2 bridge. The simulation version should work well with the gz_x500 SITL model as well as the older iris model. The code has CLI inputs that allow the user to switch between sim/hardware mode as well as trajectory speeds. Trajectories are hard-coded into the code. Just change the `reffunc` variable to one of the available trajectory functions inside the code.
+To change the model for your specific quadrotor, simply change the mass `self.m` in `quad_casadi_model.py`. Our model takes inputs to be thrust and angular rates. This means we don't use rotational dynamics, so we have no need for the inertial matrix.
+
 ## How to run:
 Pre-requisites are below, complete those first before running
 1. Clone this directory into your ROS2 workspace's source directory and build:
