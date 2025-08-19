@@ -18,10 +18,20 @@ pip install pyJoules
 
 ### 2) Install ACADOS
 Follow the official guide to build ACADOS from source as per the [official intructions](https://docs.acados.org/installation/index.html)
+1. Clone it and initialize all submodules:
 ```bash
+# Clone it and initialize all submodules:
 git clone https://github.com/acados/acados.git
 cd acados
 git submodule update --recursive --init
+```
+2. Build with CMake:
+```bash
+mkdir -p build
+cd build
+cmake -DACADOS_WITH_QPOASES=ON ..
+# add more optional arguments e.g. -DACADOS_WITH_DAQP=ON, a list of CMake options is provided below
+make install -j4
 ```
 
 ### 3) Install the ACADOS Python interface
