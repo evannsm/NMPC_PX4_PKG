@@ -4,8 +4,11 @@ Pre-requisites are below, complete those first before running
 1. Clone this directory into your ROS2 workspace's source directory and build:
 ```bash
 cd <your_ros2_ws/src>
-git clone git@github.com:evannsm/NMPC_PX4_PKG.git
-git submodule update --recursive --init
+git init
+git remote add origin git@github.com:evannsm/NMPC_PX4_PKG.git
+git fetch origin
+git checkout -b main --track origin/main
+git submodule update --init --recursive
 cd ..
 colcon build --symlink-install
 ```
