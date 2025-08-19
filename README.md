@@ -72,7 +72,7 @@ export ACADOS_SOURCE_DIR="$acados_root"
 ### 4) Install t_renderer binaries in order to be able to successfully render C code templates:
 1. Go to the [t_renderer repo](https://github.com/acados/tera_renderer/releases/) and download the correct binaries
 2. Place the binaries in <acados_root>/bin
-3. Strip the name of everything after ```t_renderer``` : (e.g. ```t_renderer-v0.2.0-linux-arm64 -> t_renderer```)
+3. Strip the name of everything after `t_renderer` : (e.g. `t_renderer-v0.2.0-linux-arm64 -> t_renderer`)
 4. Make it an executable
 ```bash
 cd <acados_root>/bin
