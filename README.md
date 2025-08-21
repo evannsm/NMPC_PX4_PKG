@@ -109,11 +109,11 @@ PY
 ~~~
 
 # Papers and their repositories:
-American Control Conference 2024 - [paper here](https://coogan.ece.gatech.edu/papers/pdf/cuadrado2024tracking.pdf)  
+American Control Conference 2024 - [see paper here](https://coogan.ece.gatech.edu/papers/pdf/cuadrado2024tracking.pdf)  
 [Personal Version of Repository](https://github.com/evannsm/MoralesCuadrado_ACC2024)  
 [Official FACTSLab Repository](https://github.com/gtfactslab/MoralesCuadrado_Llanes_ACC2024)  
 
-Transactions on Control Systems Technology 2025  
+Transactions on Control Systems Technology 2025 - [see paper here](https://arxiv.org/abs/2508.14185)  
 [Personal Version of Repository](https://github.com/evannsm/MoralesCuadrado_Baird_TCST2025)  
 [Official FACTSLab Repository](https://github.com/gtfactslab/Baird_MoralesCuadrado_TRO_2025)  
 
