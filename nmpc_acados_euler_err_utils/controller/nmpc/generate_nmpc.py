@@ -65,7 +65,7 @@ class QuadrotorEulerErrMPC:
     def generate_mpc(self):
         """Generate the MPC with error-based NONLINEAR_LS cost."""
         # Get dynamics and cost expressions from model
-        f_expl, f_impl, x, xdot, u, params, cost_y_expr, cost_y_expr_e = self.quad.dynamics()
+        f_expl, f_impl, x, xdot, u, full_ref, cost_y_expr, cost_y_expr_e = self.quad.dynamics()
 
         model = self.model
         model.f_expl_expr = f_expl
@@ -73,7 +73,7 @@ class QuadrotorEulerErrMPC:
         model.x = x
         model.xdot = xdot
         model.u = u
-        model.p = params  # Stage-wise parameters for references
+        model.p = full_ref  # Stage-wise reference values as a param named 'p'
         model.name = self.model_name
 
         # Define Acados OCP
