@@ -1,16 +1,4 @@
-"""
-CLI Entry Point for NMPC with Euler State and Wrapped Yaw Error
-===============================================================
-
-Example usage:
-
-# Auto-generated log filename:
-ros2 run nmpc_acados_euler_err run_node --platform sim --trajectory helix --double-speed --spin --log
-# -> logs to: sim_nmpc_acados_euler_err_helix_2x_spin.csv
-
-# Custom log filename:
-ros2 run nmpc_acados_euler_err run_node --platform sim --trajectory helix --log --log-file my_custom_log
-"""
+"""Entry point for the NMPC Acados Fixed Euler Error control ROS2 node."""
 
 import rclpy
 import traceback
@@ -20,11 +8,9 @@ import os
 from Logger import Logger  # type: ignore
 from .ros2px4_node import OffboardControl
 
-from nmpc_acados_euler_err_utils.main_utils import BANNER
 from quad_platforms import PlatformType
 from quad_trajectories import TrajectoryType
 from pyJoules.handler.csv_handler import CSVHandler
-
 
 def create_parser():
     """Create and configure argument parser.
@@ -118,6 +104,14 @@ def create_parser():
         help='Enable spin for circle_horz and helix trajectories'
     )
 
+    parser.add_argument(
+        '--flight-period',
+        type=float,
+        default=None,
+        help='Set custom flight period in seconds (default: 30s)'
+    )
+
+
     return parser
 
 
@@ -185,6 +179,7 @@ def main():
     double_speed = args.double_speed
     short = args.short
     spin = args.spin
+    flight_period = args.flight_period
     base_path = os.path.dirname(os.path.abspath(__file__))
 
     # Determine log filename
@@ -210,7 +205,9 @@ def main():
     print(f"Speed:         {'Double (2x)' if double_speed else 'Regular (1x)'}")
     print(f"Short:         {'Enabled (fig8_vert)' if short else 'Disabled'}")
     print(f"Spin:          {'Enabled (circle_horz, helix)' if spin else 'Disabled'}")
+    print(f"Flight Period: {flight_period if flight_period is not None else 60.0 if platform == PlatformType.HARDWARE else 30.0} seconds")
     print(f"Data Logging:  {'Enabled' if logging_enabled else 'Disabled'}")
+    
     if logging_enabled:
         print(f"Log File:      {log_file}")
     print("=" * 60 + "\n")
@@ -226,6 +223,7 @@ def main():
         pyjoules=pyjoules,
         csv_handler=CSVHandler(log_file, base_path) if pyjoules and log_file else None,
         logging_enabled=logging_enabled,
+        flight_period_=flight_period
     )
 
     logger = None

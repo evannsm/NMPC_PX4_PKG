@@ -68,7 +68,8 @@ GRAVITY: float = 9.806
 class OffboardControl(Node):
     def __init__(self, platform_type: PlatformType, trajectory: TrajectoryType = TrajectoryType.HOVER, hover_mode: int | None = None,
                  double_speed: bool = True, short: bool = False, spin: bool = False,
-                 pyjoules: bool = False, csv_handler: CSVHandler | None = None, logging_enabled: bool = False) -> None:
+                 pyjoules: bool = False, csv_handler: CSVHandler | None = None, logging_enabled: bool = False,
+                 flight_period_: bool | None = None) -> None:
 
         super().__init__('nmpc_euler_err_offboard_node')
         self.get_logger().info(f"{BANNER}Initializing ROS 2 node: '{self.__class__.__name__}'{BANNER}")
@@ -81,6 +82,7 @@ class OffboardControl(Node):
         self.spin = spin
         self.pyjoules_on = pyjoules
         self.logging_enabled = logging_enabled
+        flight_period = flight_period_ if flight_period_ is not None else 30.0 if self.sim else 60.0
 
         if self.pyjoules_on:
             print("PyJoules energy monitoring ENABLED")
@@ -96,52 +98,6 @@ class OffboardControl(Node):
             raise ValueError(f"Unknown trajectory: {trajectory}. Available: {list(trajectory_map.keys())}")
         self.ref_type = trajectory_map[trajectory]
         print(f"\n[Trajectory] Main trajectory type: {self.ref_type.name}")
-
-        # --- Set up Logging Arrays ---
-        if self.logging_enabled:
-            print("Data logging is ON")
-            self.data_log_timer_period = .1
-            self.first_log = True
-            if self.first_log:
-                self.first_log = False
-                self.get_logger().info("Starting data logging.")
-                self.platform_logtype = LogType("platform", 0)
-                self.trajectory_logtype = LogType("trajectory", 2)
-                self.traj_double_logtype = LogType("traj_double", 3)
-                self.traj_short_logtype = LogType("traj_short", 4)
-                self.traj_spin_logtype = LogType("traj_spin", 5)
-
-                self.platform_logtype.append(self.platform_type.value.upper())
-                self.trajectory_logtype.append(self.ref_type.name)
-                self.traj_double_logtype.append("DblSpd" if self.double_speed else "NormSpd")
-                self.traj_short_logtype.append("Short" if self.short else "Not Short")
-                self.traj_spin_logtype.append("Spin" if self.spin else "NoSpin")
-
-            # Time logs
-            self.program_time_logtype = LogType("time", 6)
-            self.trajectory_time_logtype = LogType("traj_time", 7)
-            self.reference_time_logtype = LogType("ref_time", 8)
-            self.comptime_logtype = LogType("comptime", 9)
-
-            # State logs
-            self.x_logtype = LogType("x", 10)
-            self.y_logtype = LogType("y", 11)
-            self.z_logtype = LogType("z", 12)
-            self.yaw_logtype = LogType("yaw", 13)
-
-            # Reference logs
-            self.xref_logtype = LogType("x_ref", 20)
-            self.yref_logtype = LogType("y_ref", 21)
-            self.zref_logtype = LogType("z_ref", 22)
-            self.yawref_logtype = LogType("yaw_ref", 22)
-
-            # Control input logs (normalized)
-            self.throttle_input_logtype = LogType("throttle_input", 26)
-            self.p_input_logtype = LogType("p_input", 27)
-            self.q_input_logtype = LogType("q_input", 28)
-            self.r_input_logtype = LogType("r_input", 29)
-
-            self.cbf_logtype = VectorLogType("cbf_term", 30, ['thrust_cbf', 'roll_cbf', 'pitch_cbf', 'yaw_cbf'])
 
         # ----------------------- ROS2 Node Stuff --------------------------
         qos_profile = QoSProfile(
@@ -183,29 +139,11 @@ class OffboardControl(Node):
             RcChannels, '/fmu/out/rc_channels',
             self.rc_channel_callback, qos_profile)
 
-        # ----------------------- Timers --------------------------
-        self.data_log_timer_period = 1.0 / 10.0
-        self.data_log_timer = self.create_timer(self.data_log_timer_period,
-                                                self.data_log_timer_callback) if self.logging_enabled else None
-
-        self.offboard_setpoint_counter = 0
-        self.offboard_timer_period = 1.0 / 10.0
-        self.timer = self.create_timer(self.offboard_timer_period,
-                                       self.offboard_mode_timer_callback)
-
-        self.publish_control_timer_period = 1.0 / 100.0
-        self.publish_control_timer = self.create_timer(self.publish_control_timer_period,
-                                                       self.publish_control_timer_callback)
-
-        self.compute_control_timer_period = 1.0 / 100.0
-        self.compute_control_timer = self.create_timer(self.compute_control_timer_period,
-                                                       self.compute_control_timer_callback)
-
         # ----------------------- Set up Flight Phases and Time --------------------------
         self.T0 = time.time()
         self.program_time: float = 0.0
         self.cushion_period = 10.0
-        self.flight_period = 30.0
+        self.flight_period = flight_period
         self.land_time = self.flight_period + 2 * self.cushion_period
         self.flight_phase = self.get_phase()
         print(f"Flight time: {self.land_time}s")
@@ -217,7 +155,7 @@ class OffboardControl(Node):
         self.trajectory_started: bool = False
         self.trajectory_time: float = 0.0
         self.reference_time: float = 0.0
-        self.T_LOOKAHEAD: float = 1.2
+        self.T_LOOKAHEAD: float = 0.0
 
         self.first_thrust = self.platform.mass * GRAVITY
         self.last_input = np.array([self.first_thrust, 0.0, 0.0, 0.0])
@@ -273,6 +211,75 @@ class OffboardControl(Node):
         time.sleep(3)
 
         self.T0 = time.time()
+
+
+        # ----------------------- Set up Logging Arrays --------------------------
+        if self.logging_enabled:
+            print("Data logging is ON")
+            self.data_log_timer_period = .1
+            self.first_log = True
+            if self.first_log:
+                self.first_log = False
+                self.get_logger().info("Starting data logging.")
+                self.platform_logtype = LogType("platform", 0)
+                self.trajectory_logtype = LogType("trajectory", 1)
+                self.traj_double_logtype = LogType("traj_double", 2)
+                self.traj_short_logtype = LogType("traj_short", 3)
+                self.traj_spin_logtype = LogType("traj_spin", 4)
+                self.lookahead_time = LogType("lookahead_time", 5)
+
+
+                self.platform_logtype.append(self.platform_type.value.upper())
+                self.trajectory_logtype.append(self.ref_type.name)
+                self.traj_double_logtype.append("DblSpd" if self.double_speed else "NormSpd")
+                self.traj_short_logtype.append("Short" if self.short else "Not Short")
+                self.traj_spin_logtype.append("Spin" if self.spin else "NoSpin")
+                self.lookahead_time.append(self.T_LOOKAHEAD)
+
+            # Time logs
+            self.program_time_logtype = LogType("time", 6)
+            self.trajectory_time_logtype = LogType("traj_time", 7)
+            self.reference_time_logtype = LogType("ref_time", 8)
+            self.comptime_logtype = LogType("comptime", 9)
+
+            # State logs
+            self.x_logtype = LogType("x", 10)
+            self.y_logtype = LogType("y", 11)
+            self.z_logtype = LogType("z", 12)
+            self.yaw_logtype = LogType("yaw", 13)
+
+            # Reference logs
+            self.xref_logtype = LogType("x_ref", 20)
+            self.yref_logtype = LogType("y_ref", 21)
+            self.zref_logtype = LogType("z_ref", 22)
+            self.yawref_logtype = LogType("yaw_ref", 22)
+
+            # Control input logs (normalized)
+            self.throttle_input_logtype = LogType("throttle_input", 26)
+            self.p_input_logtype = LogType("p_input", 27)
+            self.q_input_logtype = LogType("q_input", 28)
+            self.r_input_logtype = LogType("r_input", 29)
+
+            self.cbf_logtype = VectorLogType("cbf_term", 30, ['thrust_cbf', 'roll_cbf', 'pitch_cbf', 'yaw_cbf'])
+
+
+        # ----------------------- Run Timers --------------------------
+        self.data_log_timer_period = 1.0 / 10.0
+        self.data_log_timer = self.create_timer(self.data_log_timer_period,
+                                                self.data_log_timer_callback) if self.logging_enabled else None
+
+        self.offboard_setpoint_counter = 0
+        self.offboard_timer_period = 1.0 / 10.0
+        self.timer = self.create_timer(self.offboard_timer_period,
+                                       self.offboard_mode_timer_callback)
+
+        self.publish_control_timer_period = 1.0 / 100.0
+        self.publish_control_timer = self.create_timer(self.publish_control_timer_period,
+                                                       self.publish_control_timer_callback)
+
+        self.compute_control_timer_period = 1.0 / 100.0
+        self.compute_control_timer = self.create_timer(self.compute_control_timer_period,
+                                                       self.compute_control_timer_callback)
 
     def time_and_compare(self, func, *args, **kwargs):
         """Function to time a function call and return its output along with the time taken."""

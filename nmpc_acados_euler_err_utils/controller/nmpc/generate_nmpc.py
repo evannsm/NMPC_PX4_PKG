@@ -123,7 +123,7 @@ class QuadrotorEulerErrMPC:
         ocp.model.cost_y_expr = cost_y_expr      # [p_err, v_err, euler_err, u_err]
         ocp.model.cost_y_expr_e = cost_y_expr_e  # [p_err, v_err, euler_err]
 
-        # yref is ZERO because cost expression already outputs errors!
+        # yref is ZERO because cost expression already outputs errors
         ocp.cost.yref = np.zeros(ny)    # 13D zeros
         ocp.cost.yref_e = np.zeros(ny_e)  # 9D zeros
 
