@@ -66,9 +66,9 @@ GRAVITY: float = 9.806
 
 
 class OffboardControl(Node):
-    def __init__(self, platform_type: PlatformType, trajectory: TrajectoryType = TrajectoryType.HOVER,
-                 hover_mode: int | None = None, double_speed: bool = True, short: bool = False,
-                 spin: bool = False, pyjoules: bool = False, csv_handler: CSVHandler | None = None) -> None:
+    def __init__(self, platform_type: PlatformType, trajectory: TrajectoryType = TrajectoryType.HOVER, hover_mode: int | None = None,
+                 double_speed: bool = True, short: bool = False, spin: bool = False,
+                 pyjoules: bool = False, csv_handler: CSVHandler | None = None, logging_enabled: bool = False) -> None:
 
         super().__init__('nmpc_euler_err_offboard_node')
         self.get_logger().info(f"{BANNER}Initializing ROS 2 node: '{self.__class__.__name__}'{BANNER}")
@@ -80,6 +80,8 @@ class OffboardControl(Node):
         self.short = short
         self.spin = spin
         self.pyjoules_on = pyjoules
+        self.logging_enabled = logging_enabled
+
         if self.pyjoules_on:
             print("PyJoules energy monitoring ENABLED")
             self.csv_handler = csv_handler
@@ -96,7 +98,7 @@ class OffboardControl(Node):
         print(f"\n[Trajectory] Main trajectory type: {self.ref_type.name}")
 
         # --- Set up Logging Arrays ---
-        if True:
+        if self.logging_enabled:
             print("Data logging is ON")
             self.data_log_timer_period = .1
             self.first_log = True
@@ -184,7 +186,7 @@ class OffboardControl(Node):
         # ----------------------- Timers --------------------------
         self.data_log_timer_period = 1.0 / 10.0
         self.data_log_timer = self.create_timer(self.data_log_timer_period,
-                                                self.data_log_timer_callback) if not self.pyjoules_on else None
+                                                self.data_log_timer_callback) if self.logging_enabled else None
 
         self.offboard_setpoint_counter = 0
         self.offboard_timer_period = 1.0 / 10.0

@@ -2,7 +2,14 @@
 CLI Entry Point for NMPC with Euler State and Wrapped Yaw Error
 ===============================================================
 
-Run with: ros2 run nmpc_acados_euler_err run_node --platform sim --trajectory helix --log test_log
+Example usage:
+
+# Auto-generated log filename:
+ros2 run nmpc_acados_euler_err run_node --platform sim --trajectory helix --double-speed --spin --log
+# -> logs to: sim_nmpc_acados_euler_err_helix_2x_spin.csv
+
+# Custom log filename:
+ros2 run nmpc_acados_euler_err run_node --platform sim --trajectory helix --log --log-file my_custom_log
 """
 
 import rclpy
@@ -20,15 +27,30 @@ from pyJoules.handler.csv_handler import CSVHandler
 
 
 def create_parser():
-    """Create and configure argument parser."""
+    """Create and configure argument parser.
+
+    Args:
+        platform: 'sim' or 'hw'
+        trajectory: Trajectory name (e.g., 'circle_horz', 'fig8_vert', etc.)
+        log: Enable data logging (auto-generates filename if --log-file not provided)
+        log_file: Custom log file name (optional, overrides auto-generated name)
+        pyjoules: Enable PyJoules energy monitoring
+        double_speed: Use double speed for trajectories
+        short: Use short variant for fig8_vert trajectory
+        spin: Enable spin for circle_horz and helix trajectories
+    """
     parser = argparse.ArgumentParser(
         description='NMPC Offboard Control with Euler State and Wrapped Yaw Error',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
         """ + "==" * 60 + """
         Example usage:
-        ros2 run nmpc_acados_euler_err run_node --platform sim --trajectory hover --hover-mode 1 --log test_log
-        ros2 run nmpc_acados_euler_err run_node --platform sim --trajectory helix --double-speed --log helix_log
+        # Auto-generated log filename:
+        ros2 run nmpc_acados_euler_err run_node --platform sim --trajectory helix --double-speed --spin --log
+        # -> logs to: sim_nmpc_acados_euler_err_helix_2x_spin.csv
+
+        # Custom log filename:
+        ros2 run nmpc_acados_euler_err run_node --platform sim --trajectory helix --log --log-file my_custom_log
         """ + "==" * 60 + """
         """
     )
@@ -57,13 +79,27 @@ def create_parser():
         help="Hover mode (required when --trajectory=hover). On hardware only 1-4 are allowed.",
     )
 
-    # Optional flags
+    # Logging flags (match NR behavior)
+    parser.add_argument(
+        '--log',
+        action='store_true',
+        help='Enable data logging. Auto-generates filename based on config unless --log-file is provided.'
+    )
+
+    parser.add_argument(
+        '--log-file',
+        type=str,
+        default=None,
+        help='Custom log file name (without extension). Overrides auto-generated name when --log is used.'
+    )
+
     parser.add_argument(
         '--pyjoules',
         action='store_true',
-        help='Enable PyJoules energy monitoring'
+        help='Enable PyJoules energy monitoring (separate from --log)'
     )
 
+    # Trajectory modifier flags
     parser.add_argument(
         '--double-speed',
         action='store_true',
@@ -82,14 +118,39 @@ def create_parser():
         help='Enable spin for circle_horz and helix trajectories'
     )
 
-    parser.add_argument(
-        '--log',
-        type=str,
-        required=True,
-        help='Log file name without extension'
-    )
-
     return parser
+
+
+def ensure_csv(filename: str) -> str:
+    """Return filename that ends with exactly one '.csv' (case-insensitive)."""
+    filename = filename.strip()
+    if filename.lower().endswith(".csv"):
+        return filename[:-4] + ".csv"   # normalize casing to '.csv'
+    return filename + ".csv"
+
+
+def generate_log_filename(args) -> str:
+    """Generate auto log filename based on configuration.
+
+    Format: {platform}_nmpc_acados_euler_err_{trajectory}_{speed}[_{short}][_{spin}]
+
+    Examples:
+        sim_nmpc_acados_euler_err_helix_2x_spin.csv
+        sim_nmpc_acados_euler_err_circle_horz_1x.csv
+        hw_nmpc_acados_euler_err_fig8_vert_2x_short.csv
+    """
+    parts = []
+    parts.append(args.platform.value)               # 'sim' or 'hw'
+    parts.append("nmpc_acados_euler_err")           # controller id
+    parts.append(args.trajectory.value)             # e.g., 'helix'
+    parts.append("2x" if args.double_speed else "1x")
+
+    if args.short:
+        parts.append("short")
+    if args.spin:
+        parts.append("spin")
+
+    return "_".join(parts)
 
 
 def validate_args(args, parser: argparse.ArgumentParser) -> None:
@@ -105,6 +166,10 @@ def validate_args(args, parser: argparse.ArgumentParser) -> None:
         if args.hover_mode is not None:
             parser.error("--hover-mode is only valid when --trajectory=hover")
 
+    # Match NR behavior: disallow --log-file unless --log is enabled
+    if args.log_file is not None and not args.log:
+        parser.error("--log-file requires --log to be enabled")
+
 
 def main():
     """Main entry point for the executable."""
@@ -115,18 +180,29 @@ def main():
     platform = args.platform
     trajectory = args.trajectory
     hover_mode = args.hover_mode
+    logging_enabled = args.log
     pyjoules = args.pyjoules
     double_speed = args.double_speed
     short = args.short
     spin = args.spin
-    log_file = args.log
     base_path = os.path.dirname(os.path.abspath(__file__))
+
+    # Determine log filename
+    if logging_enabled:
+        if args.log_file is not None:
+            log_file_stem = args.log_file
+        else:
+            log_file_stem = generate_log_filename(args)
+
+        log_file = ensure_csv(log_file_stem)  # ALWAYS ends with .csv
+    else:
+        log_file = None
 
     # Print configuration
     print("\n" + "=" * 60)
     print("NMPC Euler Error Offboard Control Configuration")
     print("=" * 60)
-    print(f"Controller:    NMPC with Wrapped Yaw Error (Euler State)")
+    print("Controller:    NMPC with Wrapped Yaw Error (Euler State)")
     print(f"Platform:      {platform.value.upper()}")
     print(f"Trajectory:    {trajectory.value.upper()}")
     print(f"Hover Mode:    {hover_mode if hover_mode is not None else 'N/A'}")
@@ -134,7 +210,9 @@ def main():
     print(f"Speed:         {'Double (2x)' if double_speed else 'Regular (1x)'}")
     print(f"Short:         {'Enabled (fig8_vert)' if short else 'Disabled'}")
     print(f"Spin:          {'Enabled (circle_horz, helix)' if spin else 'Disabled'}")
-    print(f"Log File:      {log_file}")
+    print(f"Data Logging:  {'Enabled' if logging_enabled else 'Disabled'}")
+    if logging_enabled:
+        print(f"Log File:      {log_file}")
     print("=" * 60 + "\n")
 
     rclpy.init(args=None)
@@ -146,21 +224,23 @@ def main():
         short=short,
         spin=spin,
         pyjoules=pyjoules,
-        csv_handler=CSVHandler(log_file, base_path) if pyjoules else None
+        csv_handler=CSVHandler(log_file, base_path) if pyjoules and log_file else None,
+        logging_enabled=logging_enabled,
     )
 
     logger = None
 
     def shutdown_logging(*args):
         print("\nShutting down, triggering logging...")
-        if logger:
+        if logger and logging_enabled:
             logger.log(offboard_control_node)
         offboard_control_node.destroy_node()
         rclpy.shutdown()
 
     try:
-        print(f"\nInitializing Offboard Control Node")
-        logger = Logger(log_file, base_path)
+        print("\nInitializing Offboard Control Node")
+        if logging_enabled:
+            logger = Logger(log_file, base_path)
         rclpy.spin(offboard_control_node)
     except KeyboardInterrupt:
         print("\nKeyboard interrupt (Ctrl+C)")
@@ -171,7 +251,9 @@ def main():
         if pyjoules and offboard_control_node.csv_handler:
             print("Saving PyJoules energy data...")
             offboard_control_node.csv_handler.save_data()
-        print("Saving log data...")
+
+        if logging_enabled:
+            print("Saving log data...")
         shutdown_logging()
         print("\nNode shut down.")
 
