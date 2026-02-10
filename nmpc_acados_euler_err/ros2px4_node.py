@@ -22,7 +22,8 @@ from px4_msgs.msg import (
     VehicleCommand,
     VehicleStatus,
     VehicleOdometry,
-    RcChannels
+    RcChannels,
+    BatteryStatus
 )
 from nmpc_acados_euler_err_utils.px4_utils.core_funcs import (
     engage_offboard_mode,
@@ -138,6 +139,15 @@ class OffboardControl(Node):
         self.rc_channels_subscriber = self.create_subscription(
             RcChannels, '/fmu/out/rc_channels',
             self.rc_channel_callback, qos_profile)
+
+        # Battery voltage compensation
+        self.BATTERY_VOLTAGE_COMPENSATION = True
+        self.NOMINAL_VOLTAGE = 16.8  # 4S LiPo full charge voltage
+        self.battery_voltage = self.NOMINAL_VOLTAGE  # assume full until first reading
+        self.BATTERY_LPF_ALPHA = 0.05  # low-pass filter coefficient (0 < alpha < 1)
+        self.battery_status_subscriber = self.create_subscription(
+            BatteryStatus, '/fmu/out/battery_status',
+            self.battery_status_callback, qos_profile)
 
         # ----------------------- Set up Flight Phases and Time --------------------------
         self.T0 = time.time()
@@ -365,7 +375,7 @@ class OffboardControl(Node):
         self.state_output = np.hstack((self.position, self.yaw))
         self.nmpc_state = np.hstack((self.position, self.velocity, self.euler_angle_total_yaw))
 
-        self.get_logger().info(f'\nState output: {self.state_output}', throttle_duration_sec=0.3)
+        # self.get_logger().info(f'\nState output: {self.state_output}', throttle_duration_sec=0.3)
 
     def vehicle_status_callback(self, vehicle_status):
         """Callback function for vehicle_status topic subscriber."""
@@ -377,6 +387,12 @@ class OffboardControl(Node):
     def rc_channel_callback(self, rc_channels):
         flight_mode = rc_channels.channels[self.mode_channel - 1]
         self.offboard_mode_rc_switch_on = True if flight_mode >= 0.75 else False
+
+    def battery_status_callback(self, msg):
+        """Update battery voltage with exponential moving average low-pass filter."""
+        if msg.voltage_v > 0:
+            self.battery_voltage = ((1.0 - self.BATTERY_LPF_ALPHA) * self.battery_voltage
+                                    + self.BATTERY_LPF_ALPHA * msg.voltage_v)
 
     # ========== Timer Callbacks ==========
     def get_phase(self) -> FlightPhase:
@@ -537,6 +553,12 @@ class OffboardControl(Node):
 
                 new_force = float(current_control[0])
                 new_throttle = float(self.platform.get_throttle_from_force(new_force))
+
+                # Battery voltage compensation: scale throttle to account for voltage sag
+                if self.BATTERY_VOLTAGE_COMPENSATION:
+                    new_throttle *= self.NOMINAL_VOLTAGE / self.battery_voltage
+                    new_throttle = min(new_throttle, 1.0)
+
                 new_roll_rate = float(current_control[1])
                 new_pitch_rate = float(current_control[2])
                 new_yaw_rate = float(current_control[3])
@@ -575,29 +597,29 @@ class OffboardControl(Node):
 
         self.trajectory_time = time.time() - self.trajectory_T0
         self.reference_time = self.trajectory_time + self.T_LOOKAHEAD
-        self.get_logger().warning(
-            f"\nTrajectory time: {self.trajectory_time:.2f}s, Reference time: {self.reference_time:.2f}s",
-            throttle_duration_sec=throttle_val)
+        # self.get_logger().warning(
+        #     f"\nTrajectory time: {self.trajectory_time:.2f}s, Reference time: {self.reference_time:.2f}s",
+        #     throttle_duration_sec=throttle_val)
 
         ref, ref_dot = self.generate_ref_trajectory(self.ref_type)
         self.reff = np.hstack((ref[:, 0:3], ref_dot[:, 0:3], np.zeros((ref_dot.shape[0], 2)), ref[:, -1:]))
         
 
-        self.get_logger().warning(f"\nCurrent state: {self.nmpc_state}", throttle_duration_sec=throttle_val)
-        self.get_logger().warning(f"\nCurrent ref: {self.reff[0, :]}", throttle_duration_sec=throttle_val)
-        self.get_logger().warning(f"\nCurrent error: {self.nmpc_state - self.reff[0, :]}",
-                                  throttle_duration_sec=throttle_val)
+        # self.get_logger().warning(f"\nCurrent state: {self.nmpc_state}", throttle_duration_sec=throttle_val)
+        # self.get_logger().warning(f"\nCurrent ref: {self.reff[0, :]}", throttle_duration_sec=throttle_val)
+        # self.get_logger().warning(f"\nCurrent error: {self.nmpc_state - self.reff[0, :]}",
+        #                           throttle_duration_sec=throttle_val)
 
         t0 = time.time()
         self.controller_handler()
         self.compute_time = time.time() - t0
-        self.get_logger().warning(f"\nMPC Solver Status: {self.status}", throttle_duration_sec=throttle_val)
-        self.get_logger().warning(
+        # self.get_logger().warning(f"\nMPC Solver Status: {self.status}", throttle_duration_sec=throttle_val)
+        self.get_logger().info(
             f"\nControl computation time: {self.compute_time:.4f}s, Good for {1.0 / self.compute_time:.2f} Hz",
             throttle_duration_sec=throttle_val)
 
         self.new_input = self.new_inputs[0, :].flatten()
-        self.get_logger().warning(f"\nNew control input: {self.new_input}", throttle_duration_sec=throttle_val)
+        # self.get_logger().warning(f"\nNew control input: {self.new_input}", throttle_duration_sec=throttle_val)
 
         self.control_buffer = self.new_inputs
         self.buffer_index = 0
