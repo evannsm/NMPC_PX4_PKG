@@ -13,7 +13,7 @@ Key improvement: Wrapped yaw error using atan2(sin, cos) for proper angle wrappi
 
 from acados_template import AcadosOcp, AcadosOcpSolver, AcadosModel
 import numpy as np
-from nmpc_px4_pkg_utils.controller.nmpc.acados_model import QuadrotorEulerModel
+from nmpc_acados_px4_utils.controller.nmpc.acados_model import QuadrotorEulerModel
 import importlib, sys, os
 from scipy.linalg import block_diag
 import time

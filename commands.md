@@ -8,7 +8,7 @@ NMPC controller using an **Euler-angle state representation** with a **wrapped y
 
 ```bash
 cd ~/ws_clean_traj
-colcon build --packages-select nmpc_px4_pkg
+colcon build --packages-select nmpc_acados_px4
 source install/setup.bash
 ```
 
@@ -20,37 +20,37 @@ source install/setup.bash
 
 ```bash
 # Hover (requires --hover-mode)
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory hover --hover-mode 1
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory hover --hover-mode 1
 
 # Circle Horizontal
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory circle_horz
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory circle_horz --double-speed
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory circle_horz --spin
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory circle_horz --double-speed --spin
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory circle_horz
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory circle_horz --double-speed
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory circle_horz --spin
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory circle_horz --double-speed --spin
 
 # Circle Vertical
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory circle_vert
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory circle_vert --double-speed
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory circle_vert
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory circle_vert --double-speed
 
 # Figure-8 Horizontal
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory fig8_horz
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory fig8_horz --double-speed
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_horz
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_horz --double-speed
 
 # Figure-8 Vertical
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory fig8_vert
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory fig8_vert --double-speed
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory fig8_vert --short
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory fig8_vert --double-speed --short
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_vert
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_vert --double-speed
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_vert --short
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_vert --double-speed --short
 
 # Helix
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory helix
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory helix --double-speed
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory helix --spin
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory helix --double-speed --spin
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory helix
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory helix --double-speed
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory helix --spin
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory helix --double-speed --spin
 
 # Yaw Only
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory yaw_only
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory yaw_only --double-speed
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory yaw_only
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory yaw_only --double-speed
 ```
 
 ---
@@ -59,18 +59,18 @@ ros2 run nmpc_px4_pkg run_node --platform sim --trajectory yaw_only --double-spe
 
 ```bash
 # Hover (modes 1–4 only on hardware)
-ros2 run nmpc_px4_pkg run_node --platform hw --trajectory hover --hover-mode 1
-ros2 run nmpc_px4_pkg run_node --platform hw --trajectory hover --hover-mode 2
-ros2 run nmpc_px4_pkg run_node --platform hw --trajectory hover --hover-mode 3
-ros2 run nmpc_px4_pkg run_node --platform hw --trajectory hover --hover-mode 4
+ros2 run nmpc_acados_px4 run_node --platform hw --trajectory hover --hover-mode 1
+ros2 run nmpc_acados_px4 run_node --platform hw --trajectory hover --hover-mode 2
+ros2 run nmpc_acados_px4 run_node --platform hw --trajectory hover --hover-mode 3
+ros2 run nmpc_acados_px4 run_node --platform hw --trajectory hover --hover-mode 4
 
 # Circle Horizontal
-ros2 run nmpc_px4_pkg run_node --platform hw --trajectory circle_horz
-ros2 run nmpc_px4_pkg run_node --platform hw --trajectory circle_horz --double-speed
+ros2 run nmpc_acados_px4 run_node --platform hw --trajectory circle_horz
+ros2 run nmpc_acados_px4 run_node --platform hw --trajectory circle_horz --double-speed
 
 # Helix
-ros2 run nmpc_px4_pkg run_node --platform hw --trajectory helix
-ros2 run nmpc_px4_pkg run_node --platform hw --trajectory helix --double-speed
+ros2 run nmpc_acados_px4 run_node --platform hw --trajectory helix
+ros2 run nmpc_acados_px4 run_node --platform hw --trajectory helix --double-speed
 ```
 
 ---
@@ -82,8 +82,8 @@ If no filename is provided, a log name is **auto-generated** from the configurat
 
 ```bash
 # Auto-generated filename:
-# sim_nmpc_px4_pkg_helix_2x_spin.csv
-ros2 run nmpc_px4_pkg run_node \
+# sim_nmpc_acados_px4_helix_2x_spin.csv
+ros2 run nmpc_acados_px4 run_node \
   --platform sim \
   --trajectory helix \
   --double-speed \
@@ -94,7 +94,7 @@ ros2 run nmpc_px4_pkg run_node \
 ### Custom Log Filename
 
 ```bash
-ros2 run nmpc_px4_pkg run_node \
+ros2 run nmpc_acados_px4 run_node \
   --platform sim \
   --trajectory helix \
   --log \
@@ -108,7 +108,7 @@ ros2 run nmpc_px4_pkg run_node \
 ## With PyJoules Energy Monitoring
 
 ```bash
-ros2 run nmpc_px4_pkg run_node \
+ros2 run nmpc_acados_px4 run_node \
   --platform sim \
   --trajectory helix \
   --double-speed \

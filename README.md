@@ -44,10 +44,10 @@ This controller solves a finite-horizon optimal control problem at every timeste
 source install/setup.bash
 
 # Fly a figure-8 in simulation
-ros2 run nmpc_px4_pkg run_node --platform sim --trajectory fig8_horz
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_horz
 
 # Hardware flight with logging
-ros2 run nmpc_px4_pkg run_node --platform hw --trajectory helix --log
+ros2 run nmpc_acados_px4 run_node --platform hw --trajectory helix --log
 ```
 
 ### CLI Options
@@ -76,11 +76,11 @@ ros2 run nmpc_px4_pkg run_node --platform hw --trajectory helix --log
 ## Package Structure
 
 ```
-nmpc_px4_pkg/
-├── nmpc_px4_pkg/
+nmpc_acados_px4/
+├── nmpc_acados_px4/
 │   ├── run_node.py              # CLI entry point and argument parsing
 │   └── ros2px4_node.py          # ROS 2 node (subscriptions, publishers, control loop)
-└── nmpc_px4_pkg_utils/
+└── nmpc_acados_px4_utils/
     ├── controller/
     │   └── nmpc/
     │       ├── generate_nmpc.py # NMPC problem formulation and C-code generation
@@ -95,7 +95,7 @@ nmpc_px4_pkg/
 
 ```bash
 # Inside a ROS 2 workspace src/ directory
-git clone git@github.com:evannsm/nmpc_px4_pkg.git
+git clone git@github.com:evannsm/nmpc_acados_px4.git
 cd .. && colcon build --symlink-install
 ```
 
