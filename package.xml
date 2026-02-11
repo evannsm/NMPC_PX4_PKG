@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>nmpc_acados_euler_err</name>
+  <name>nmpc_px4_pkg</name>
   <version>0.1.0</version>
   <description>NMPC controller with Euler state and wrapped yaw error cost</description>
   <maintainer email="egmc@todo.todo">egmc</maintainer>

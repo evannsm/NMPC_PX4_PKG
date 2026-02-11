@@ -25,7 +25,7 @@ from px4_msgs.msg import (
     RcChannels,
     BatteryStatus
 )
-from nmpc_acados_euler_err_utils.px4_utils.core_funcs import (
+from nmpc_px4_pkg_utils.px4_utils.core_funcs import (
     engage_offboard_mode,
     arm,
     land,
@@ -44,14 +44,14 @@ from quad_trajectories import (
     TRAJ_REGISTRY,
     generate_reference_trajectory
 )
-from nmpc_acados_euler_err_utils.controller.nmpc import (
+from nmpc_px4_pkg_utils.controller.nmpc import (
     QuadrotorEulerModel,
     QuadrotorEulerErrMPC
 )
 
-from nmpc_acados_euler_err_utils.main_utils import BANNER
-from nmpc_acados_euler_err_utils.transformations.adjust_yaw import adjust_yaw
-from nmpc_acados_euler_err_utils.px4_utils.flight_phases import FlightPhase
+from nmpc_px4_pkg_utils.main_utils import BANNER
+from nmpc_px4_pkg_utils.transformations.adjust_yaw import adjust_yaw
+from nmpc_px4_pkg_utils.px4_utils.flight_phases import FlightPhase
 
 import time
 import numpy as np

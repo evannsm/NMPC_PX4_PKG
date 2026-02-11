@@ -1,4 +1,4 @@
-# nmpc_acados_euler_err
+# Nonlinear NMPC for PX4-ROS2 Deployment
 
 A ROS 2 Nonlinear Model Predictive Controller (NMPC) for quadrotors using the [Acados](https://docs.acados.org/) solver. Formulates the tracking problem with an error-based cost in Euler angle representation and uses `atan2`-based yaw wrapping for correct angular error computation.
 
@@ -26,15 +26,15 @@ This controller solves a finite-horizon optimal control problem at every timeste
 
 **Stage cost (13D):**
 
-| Component | Weight | Dimension |
-|-----------|--------|-----------|
-| Position error | `2e3` | 3 |
-| Velocity error | `2e1` | 3 |
-| Roll/pitch error | `2e1` | 2 |
-| Yaw error | `2e2` | 1 |
-| Thrust | `1e1` | 1 |
-| Body rates (p, q) | `1e3` | 2 |
-| Yaw rate (r) | `1e2` | 1 |
+| Component         | Weight | Dimension |
+| ----------------- | ------ | --------- |
+| Position error    | `2e3`  | 3         |
+| Velocity error    | `2e1`  | 3         |
+| Roll/pitch error  | `2e1`  | 2         |
+| Yaw error         | `2e2`  | 1         |
+| Thrust            | `1e1`  | 1         |
+| Body rates (p, q) | `1e3`  | 2         |
+| Yaw rate (r)      | `1e2`  | 1         |
 
 **Terminal cost (9D):** same as stage cost without input terms (position `1e3`, velocity `1e1`, roll/pitch `1e1`, yaw `1e2`).
 
@@ -44,25 +44,25 @@ This controller solves a finite-horizon optimal control problem at every timeste
 source install/setup.bash
 
 # Fly a figure-8 in simulation
-ros2 run nmpc_acados_euler_err run_node --platform sim --trajectory fig8_horz
+ros2 run nmpc_px4_pkg run_node --platform sim --trajectory fig8_horz
 
 # Hardware flight with logging
-ros2 run nmpc_acados_euler_err run_node --platform hw --trajectory helix --log
+ros2 run nmpc_px4_pkg run_node --platform hw --trajectory helix --log
 ```
 
 ### CLI Options
 
-| Flag | Description |
-|------|-------------|
-| `--platform {sim,hw}` | Target platform (required) |
-| `--trajectory {hover,yaw_only,circle_horz,...}` | Trajectory type (required) |
-| `--hover-mode {1..8}` | Hover sub-mode (1-4 for hardware) |
-| `--log` | Enable CSV data logging |
-| `--log-file NAME` | Custom log filename |
-| `--double-speed` | 2x trajectory speed |
-| `--short` | Short variant (fig8_vert) |
-| `--spin` | Enable yaw rotation |
-| `--flight-period SEC` | Custom flight duration |
+| Flag                                            | Description                       |
+| ----------------------------------------------- | --------------------------------- |
+| `--platform {sim,hw}`                           | Target platform (required)        |
+| `--trajectory {hover,yaw_only,circle_horz,...}` | Trajectory type (required)        |
+| `--hover-mode {1..8}`                           | Hover sub-mode (1-4 for hardware) |
+| `--log`                                         | Enable CSV data logging           |
+| `--log-file NAME`                               | Custom log filename               |
+| `--double-speed`                                | 2x trajectory speed               |
+| `--short`                                       | Short variant (fig8_vert)         |
+| `--spin`                                        | Enable yaw rotation               |
+| `--flight-period SEC`                           | Custom flight duration            |
 
 ## Dependencies
 
@@ -76,11 +76,11 @@ ros2 run nmpc_acados_euler_err run_node --platform hw --trajectory helix --log
 ## Package Structure
 
 ```
-nmpc_acados_euler_err/
-├── nmpc_acados_euler_err/
+nmpc_px4_pkg/
+├── nmpc_px4_pkg/
 │   ├── run_node.py              # CLI entry point and argument parsing
 │   └── ros2px4_node.py          # ROS 2 node (subscriptions, publishers, control loop)
-└── nmpc_acados_euler_err_utils/
+└── nmpc_px4_pkg_utils/
     ├── controller/
     │   └── nmpc/
     │       ├── generate_nmpc.py # NMPC problem formulation and C-code generation
@@ -95,7 +95,7 @@ nmpc_acados_euler_err/
 
 ```bash
 # Inside a ROS 2 workspace src/ directory
-git clone git@github.com:evannsm/nmpc_acados_euler_err.git
+git clone git@github.com:evannsm/nmpc_px4_pkg.git
 cd .. && colcon build --symlink-install
 ```
 

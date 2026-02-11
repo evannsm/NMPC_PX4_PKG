@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-package_name = 'nmpc_acados_euler_err'
+package_name = 'nmpc_px4_pkg'
 
 setup(
     name=package_name,
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'run_node = nmpc_acados_euler_err.run_node:main',
+            'run_node = nmpc_px4_pkg.run_node:main',
         ],
     },
 )

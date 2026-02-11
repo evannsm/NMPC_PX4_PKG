@@ -32,11 +32,11 @@ def create_parser():
         """ + "==" * 60 + """
         Example usage:
         # Auto-generated log filename:
-        ros2 run nmpc_acados_euler_err run_node --platform sim --trajectory helix --double-speed --spin --log
-        # -> logs to: sim_nmpc_acados_euler_err_helix_2x_spin.csv
+        ros2 run nmpc_px4_pkg run_node --platform sim --trajectory helix --double-speed --spin --log
+        # -> logs to: sim_nmpc_px4_pkg_helix_2x_spin.csv
 
         # Custom log filename:
-        ros2 run nmpc_acados_euler_err run_node --platform sim --trajectory helix --log --log-file my_custom_log
+        ros2 run nmpc_px4_pkg run_node --platform sim --trajectory helix --log --log-file my_custom_log
         """ + "==" * 60 + """
         """
     )
@@ -126,16 +126,16 @@ def ensure_csv(filename: str) -> str:
 def generate_log_filename(args) -> str:
     """Generate auto log filename based on configuration.
 
-    Format: {platform}_nmpc_acados_euler_err_{trajectory}_{speed}[_{short}][_{spin}]
+    Format: {platform}_nmpc_px4_pkg_{trajectory}_{speed}[_{short}][_{spin}]
 
     Examples:
-        sim_nmpc_acados_euler_err_helix_2x_spin.csv
-        sim_nmpc_acados_euler_err_circle_horz_1x.csv
-        hw_nmpc_acados_euler_err_fig8_vert_2x_short.csv
+        sim_nmpc_px4_pkg_helix_2x_spin.csv
+        sim_nmpc_px4_pkg_circle_horz_1x.csv
+        hw_nmpc_px4_pkg_fig8_vert_2x_short.csv
     """
     parts = []
     parts.append(args.platform.value)               # 'sim' or 'hw'
-    parts.append("nmpc_acados_euler_err")           # controller id
+    parts.append("nmpc_px4_pkg")           # controller id
     parts.append(args.trajectory.value)             # e.g., 'helix'
     parts.append("2x" if args.double_speed else "1x")
 
