@@ -1,0 +1,238 @@
+Quadrotor research is led by work on small, agile indoor racing drones with significant onboard computing capabilities. In particular, quadrotors small enough to be classified as Micro-unmanned Aerial Vehicles (MAVs) of a size between \qtyrange{0.1}{0.5}{m} in diagonal length and \qtyrange{0.1}{0.5}{kg} of mass \cite{mUAV_challenges_and_opportunities, kushleyev_towards_swarm_of_agile_microquads} are commonly used.
+
+While smaller quadrotors are desirable for upkeep and for multi-agent research in small flight spaces, the primary reason for their expansive use lies in the physics of quadrotor flight. A quadrotor's translational motion is controlled by tilting its body, meaning rotational dynamics directly influence translational agility. Consequently, because angular acceleration is inversely proportional to the size of the quadrotor \cite{kushleyev_towards_swarm_of_agile_microquads}, MAVs feature prominently in present-day research.
+
+However, while less maneuverable, medium-sized and larger quadrotors have the inertia necessary to withstand unfavorable real-world weather conditions and can carry larger payloads~\cite{uav_handbook, kushleyev_towards_swarm_of_agile_microquads}. This makes research exploiting their strengths and addressing their limitations both useful for real-world deployment and less commonly addressed in work that focuses on small racing drones. In contrast to the dominant focus on MAV agility, our work investigates the complementary challenges posed by larger platforms. We begin with the challenges of computational constraints and limited vehicle agility, and seek to maximize trajectory speed and tracking accuracy despite these constraints. The quadrotor used in our flight experiments is depicted  in Figure~\ref{fig:my_quadrotor_image}.
+% This is a break from the norm in quadrotor research and exploits a gap in the literature.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.2\textwidth]{images/3_my_holybrox500v2.pdf}
+    \caption{The Holybro X500 V2 quadrotor used for hardware experiments. It is fitted with tracking markers, a radio receiver, and an on-board Raspberry Pi with ROS2 for control computations. The quadrotor weighs \qty{2.1}{kg}, measures \qty{0.6}{m} diagonally, and \qty{0.25}{m} vertically.}
+    \label{fig:my_quadrotor_image}
+    % \vspace{-5mm}
+
+\end{figure}%\vspace{-1.5mm}
+
+
+
+\subsection{Dynamic Model and Tracking Controllers for the Quadrotor}\label{subsec: Experiments_Quad/model}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=1.0\textwidth]{images/comparison_nmpc_vs_nrt.pdf}
+    \caption{Quadrotor: Flight data in red, trajectory reference in blue. Rows from top to bottom are the \wardi{NR-based technique} and NMPC.}
+    \label{fig:quad_standard_2x}
+\end{figure*}
+
+We model our quadrotor as a 9-state, 4-input system. We take the system state as
+\begin{align}
+{x} &= \begin{bmatrix}
+        p_x & p_y & p_z & V_x & V_y & V_z & \phi & \theta & \psi
+    \end{bmatrix}^{\top}\in\mathbb{R}^9
+\end{align}
+where $(p_x, p_y, p_z)$ is the system's 3D position in a fixed north, east, down (NED) world frame, $(V_x, V_y, V_z)$ is the system's velocity within the frame, and $(\phi, \theta, \psi)$ are Euler angles describing the orientation of the system within the same coordinate framework.
+
+The system input is 
+\(
+u = \begin{bmatrix} u_\tau, \; u_p, \; u_q, \; u_r \end{bmatrix}^{\top} \in \mathbb{R}^4,
+\)
+where $u_\tau$ is the net thrust through the quadrotor's body-frame $z$-axis and 
+$\omega^{b} = (u_p, u_q, u_r)$ are the angular body rates of the quadrotor. The nonlinear dynamics are \evanns{
+\begin{equation}
+\label{eqn: quad_nonlindyn}
+    \begin{aligned}
+        &(\dot{p}_x,\dot{p}_y,\dot{p}_z) = (V_x, V_y, V_z),\\
+        &\dot{V}_x = -\tfrac{u_\tau}{m} \Bigl(\sin\phi \sin\psi + \cos\phi \cos\psi \sin\theta \Bigr),\\
+        &\dot{V}_y = -\tfrac{u_\tau}{m} \Bigl(\cos\phi \sin\psi \sin\theta - \cos\psi \sin\phi \Bigr),\\
+        &\dot{V}_z = g - \tfrac{u_\tau}{m} \Bigl(\cos\phi \cos\theta \Bigr),\\
+        &(\dot{\phi},\dot{\theta},\dot{\psi}) = T \, \omega^{b},
+    \end{aligned}
+\end{equation}
+where $T$ is the matrix for angular velocity transformations \cite{Sabatino860649}, namely
+\[
+T =
+\begin{bmatrix}
+1 & \sin\phi \tan\theta & \cos\phi \tan\theta \\
+0 & \cos\phi & -\sin\phi \\
+0 & \tfrac{\sin\phi}{\cos\theta} & \tfrac{\cos\phi}{\cos\theta}
+\end{bmatrix}.
+\]}
+
+For the quadrotor, we compare the \evanns{NR-based technique} against a compiled NMPC algorithm built with the \texttt{acados}~\cite{acados} fast embedded optimal control toolbox. \evanns{To ensure an even and practically relevant comparison across controllers, the NMPC implementation used in our experiments relies on the standard numerical settings of the \texttt{acados} SQP solver, including its native tolerances, warm-starting behavior, and iteration limits. Across all methods for both the quadrotor and the blimp, we employ conservative tuning approaches that favor out-of-the-box configurations and minimal solver-level customization. For example, although more specialized adjustments to NMPC—such as modified termination criteria, customized tolerances, or tailored warm-start schemes—could reduce computation times for certain trajectories, such enhancements typically require substantial modification and may obscure the source of the performance gains. In contrast, the NR-based technique exhibits predictable behavior under minimal tuning. For these reasons, we evaluate all methods under well-tuned yet conservative numerical configurations.}
+
+{\color{red} In addition to the above solver-level considerations, the NMPC implementation used in the experiments reported here incorporates several improvements relative to an initial version of the algorithm. These changes address both the computational structure of the solver and the fidelity of the model and cost formulation.
+
+\textit{Solver scheme.} The initial implementation used a full SQP solver that iterated to convergence at each sampling instant. The updated implementation employs the Real-Time Iteration (RTI) scheme~\cite{Diehl2002} (\texttt{SQP\_RTI} in \texttt{acados}), which performs a single SQP linearization and QP solve per sampling instant. The RTI scheme was specifically designed to handle the real-time constraint: rather than waiting for full convergence, it prepares the next SQP iterate during the sampling interval and applies a single Newton-type step, yielding a bounded and more predictable computation time per cycle while maintaining convergence properties under mild assumptions.
+
+\textit{Computational delay compensation and consistent command publication.} Despite the RTI scheme, the average solve time still exceeds one sampling period on the onboard computer (see Table~\ref{tab:quad_computation_time_comparison}). In the initial implementation, the NMPC solve and publication of the control input were performed sequentially within the same \qty{100}{\hertz} timer callback, so any solver overrun directly disrupted the command rate. This is the concern identified in Findeisen~\cite{Findeisen2004} (Section~4.5): when computation takes non-negligible time relative to the sampling period, the applied input no longer corresponds to the current system state, and if this delay is not accounted for, performance degrades or the closed loop may destabilize. Following the computational delay compensation strategy discussed in that work, the updated implementation decouples computation from publication: a dedicated publish callback applies commands to the flight controller at a consistent \qty{100}{\hertz} from a buffered predicted control sequence, while a separate compute callback solves the NMPC problem and updates this buffer upon completion. Between successive NMPC solves, the publish callback applies subsequent steps of the previously computed open-loop optimal control trajectory. This ensures consistent command timing independent of variable solver execution time.
+
+\textit{Yaw error formulation.} The initial implementation used a \texttt{LINEAR\_LS} cost in which the raw yaw state was compared to the raw yaw reference. This formulation does not account for angle wrapping: when the reference yaw crosses the $\pm\pi$ branch cut, the cost encodes a spurious large error of magnitude $\approx 2\pi$ rather than the true short-arc difference. In the updated implementation, the cost type is changed to \texttt{NONLINEAR\_LS} with an error-based cost expression, and the yaw component of the attitude error is computed as
+\[
+\psi_{\mathrm{err}} = \operatorname{atan2}\!\bigl(\sin(\psi - \psi_{\mathrm{ref}}),\, \cos(\psi - \psi_{\mathrm{ref}})\bigr),
+\]
+which correctly wraps the angular difference to $(-\pi,\,\pi]$ for any combination of $\psi$ and $\psi_{\mathrm{ref}}$. Stage-wise reference values are passed as acados parameters so that this nonlinear error expression can be evaluated at each stage of the horizon.
+
+\textit{Angular kinematics model.} The initial implementation employed a simplified kinematic model in which the body-rate inputs $(u_p, u_q, u_r)$ were directly equated to the Euler angle rates $(\dot\phi, \dot\theta, \dot\psi)$, an approximation that is only accurate near zero roll and pitch. The updated model correctly implements the Euler-rate transformation described in~\eqref{eqn: quad_nonlindyn}: $(\dot\phi, \dot\theta, \dot\psi)^{\top} = T(\phi,\theta)\,\omega^b$, where $T$ is the kinematic matrix given in the paper. This correction improves prediction accuracy at non-trivial attitudes, which is important for trajectories involving simultaneous roll, pitch, and yaw motion.}
+
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=0.45\textwidth]{images/rmse_vs_alpha1.pdf}
+%     \caption{Empirical sensitivity of tracking error to the controller-speedup factor $\alpha$  associated with the thrust-parameter input $u_{\tau}$.}
+%     %All tests are carried out with rate speedup parameters being five units above the thrust parameter \(\alpha_1\), consistent with common application of the speedup parameter vector}
+%     \label{fig:alpha_sensitivity}
+% \end{figure}
+
+% \evanns{In addition, to assess the sensitivity of the \evanns{NR-based technique} to the speedup factor $\alpha$, we conduct a sweep over a wide range of values while holding all other parameters fixed. As seen in Figure~\ref{fig:alpha_sensitivity}, increasing $\alpha$ beyond a moderate level yields only marginal improvements in tracking accuracy. Over a broad interval, the RMSE remains nearly constant, indicating that the controller performance is largely insensitive to the precise choice of $\alpha$ within a substantial range of values. These tests were carried our in a numerical simulator of the quadrotor model utilized in this work.}
+
+
+
+% \begin{table}[h]
+% \centering
+% \caption{Empirical sensitivity of tracking error to the controller-speedup factor $\alpha$.}
+% \label{tab:alpha_sensitivity}
+% \begin{tabular}{c c c}
+% \hline
+% $\alpha$ range & RMSE (mean $\pm$ std) \\
+% \hline
+% $[3,\,15]$   & $0.198 \pm 0.009$\\
+% $[17,\,45]$  & $0.186 \pm 0.002$\\
+% $[47,\,95]$  & $0.184 \pm 0.001$\\
+% $[97,\,165]$ & $0.183 \pm 0.001$\\
+% \hline
+% \end{tabular}
+% \end{table}
+
+
+
+\subsection{Quadrotor Experimental Setup and Results}\label{subsec: Experiments_Quad/setup}
+
+Leveraging the cascaded control architecture of the PX4 flight stack~\cite{PX4_Controller_Diagrams}, we send rate control commands to the innermost loop of the stack. This control structure makes the system highly sensitive to small input variations, requiring continuous micro-adjustments. Consequently, tracking controllers deployed on such a system must publish commands at rates of at least \qty{100}{\hertz} to ensure flight stability.
+
+In our hardware experiments, we use a {Holybro X500} quadrotor equipped with a {Pixhawk 6X} flight controller as the flight management unit. Onboard control computations are performed using a Raspberry Pi 4 Model B transmitting control commands to the flight controller via a serial connection.
+Communication between the Raspberry Pi and the flight controller is facilitated through the ROS 2 API available within the PX4 flight stack. The $\mu\text{XRCE-DDS}$ middleware serves as a bridge between PX4’s native uORB topics and ROS 2 topics. For motion capture, we employ the OptiTrack system and use a relay to convert OptiTrack messages into visual odometry messages. These are subsequently fused with the flight controller’s onboard sensor data via the flight stack’s extended Kalman filter.
+
+\evanns{Despite the significant differences between the blimp and quadrotor platforms, the NR-based tracking technique exhibits a modular structure that supports cross-platform deployment. Porting the controller requires (i) substituting the appropriate vehicle dynamics within the internal prediction model, and (ii) updating the input evolution law $u_{{\rm next}} = u + \dot{u}\,\Delta t$ to match the platform’s control-rate and actuation conventions. Additionally, incorporating platform-specific safe control limits into the I-CBF constraints ensures compatibility with each vehicle’s actuator capabilities and desired flight envelope. The remaining effort consists of tuning the speedup factor $\alpha$ and lookahead horizon $T$. While these steps are not trivial, the controller’s structure makes the adaptation process systematic and relatively straightforward.
+}
+
+
+
+
+% \flag{Explain this better}Due to the higher maneuverability of quadrotors compared to blimps, more complex trajectories are possible. We selected a total of eight trajectories for the quadrotor, with variations accounting for the total of twenty-two trajectories. We first test the five standard trajectories as explained in Section \ref{sec: Experiments_Blimp}. We also introduce a new set of trajectories, called ``aggressive" trajectories. These include performing the five standard trajectories at double their original speed, as well as three new trajectories: Helix, Sawtooth, and Triangle. We also introduce variants that incorporate both path tracking and simultaneous yaw reference tracking for the standard trajectories. Lastly, some of the aggressive trajectories are also tested at double their original travel speeds as well as double the original yawing speeds.
+
+We again utilize the five standard trajectories from the Blimp experiments: Horizontal Circle (Circle A), Vertical Circle (Circle B),  Horizontal Lemniscate (Lemniscate A), Vertical Short Lemniscate (Lemniscate B), and Vertical Tall Lemniscate (Lemniscate C). We also include the aggressive trajectories:  Regular Helix (Helix A), Yawing Helix (Helix B), and Yawing Horizontal Circle (Circle C). Due to the higher maneuverability of quadrotors compared to blimps, we implement two additional aggressive trajectories:
+Sawtooth and Triangle. Figure~\ref{fig:quad_standard_2x} plots tracking results and provides a visual for the trajectories which can be plotted in two dimensions.\footnote{As for the case of the blimp, we use the acronym ``NRT'' for ``NR Technique'' in Figure 8 and Tables III and IV.}
+% , which cannot be depicted  in Figure~\ref{fig:quad_standard_2x} since they are three dimensional. 
+
+Comparative results of the  five standard trajectories and the five aggressive trajectories are summarized in 
+Tables~\ref{tab:quad_RMSE_merged} and~\ref{tab:quad_computation_time_comparison}, providing quantitative differences between the \wardi{NR-based technique and the NMPC approach.}
+
+\begin{table}
+  \centering
+  \caption{Quadrotor - \wardi{NR-based technique} vs. NMPC, RMSE Comparison (Clipped vs. Non-Clipped Transients)}
+  \label{tab:quad_RMSE_merged}
+  \begin{tabular}{|c|cc|cc|}
+    \hline
+    \textbf{Trajectory} & \multicolumn{2}{c|}{\textbf{Clipped Transients}} & \multicolumn{2}{c|}{\textbf{With Transients}} \\
+    \cline{2-5}
+    & \textbf{NRT [m]} & \textbf{NMPC [m]} & \textbf{NRT [m]} & \textbf{NMPC [m]} \\
+    \hline
+    Circle A      & 0.10695 & \textbf{0.03932} & 0.12266 & \textbf{0.10653} \\
+    \hline
+    Circle B      & 0.11887 & \textbf{0.03246} & \textbf{0.12276} & 0.15162 \\
+    \hline
+    Lemniscate A  & 0.12328 & \textbf{0.09738} & 0.12249 & \textbf{0.11311} \\
+    \hline
+    Lemniscate B  & 0.15915 & \textbf{0.04683} & 0.15203 & \textbf{0.10479} \\
+    \hline
+    Lemniscate C  & 0.14554 & \textbf{0.09938} & \textbf{0.14532} & 0.17329 \\
+    \hline
+    Helix A       & 0.14879 & \textbf{0.13327} & \textbf{0.14867} & 0.16865 \\
+    \hline
+    Helix B       & 0.19540 & \textbf{0.14977} & 0.18851 & \textbf{0.18044} \\
+    \hline
+    Circle C      & 0.17398 & \textbf{0.14782} & \textbf{0.17073} & 0.17715 \\
+    \hline
+    Sawtooth      & 0.04014 & \textbf{0.02331} & \textbf{0.04505} & 0.06032 \\
+    \hline
+    Triangle      & 0.05979 & \textbf{0.01803} & 0.08136 & \textbf{0.08387} \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{Quadrotor Analysis and Discussion}\label{subsec: Experiments_Quad/analysis}
+We note that the true flight paths are designed so that the quadrotor holds a hover position over the origin for five seconds before beginning each trajectory. At the end of each trajectory, the quadrotor is commanded to return to the origin and hover once again. This introduces discontinuities in the reference that lead to a transient portion of flight, and we compare performance with and without this transient portion.
+% , since both the \evanns{NR-based technique} and NMPC display corresponding transient oscillations. 
+%\textcolor{blue}{[Check this. In particular, I removed this comment from the introduction becuase it seemed out of place.]} %This provides another useful metric for comparison, namely the aforementioned challenge of the initial position and initial target reference being too far apart.
+
+If we clip these transient portions of flight to consider strictly the trajectory tracking abilities of the NMPC and \wardi{NR-based techniques}, as seen in the ``Clipped Transients'' column of Table~\ref{tab:quad_RMSE_merged}, NMPC outperforms the \wardi{NR-based technique} in terms of RMSE for all successful flights. However, NMPC struggled  with trajectories that included yawing references, leading to crashes  when attempting Helix B and Circle C. As a result, we were unable to collect data for these trajectories with NMPC. Additionally, NMPC often displayed undesirable flight characteristics in the form of shaking behaviors, which can be seen in the video demonstrations. As will be discussed shortly, this shaking behavior is caused by the large computing  requirements for NMPC.
+
+
+Further, as noted previously, the tracking performance of both  NMPC and the \evanns{NR-based technique} can \wardi{be degraded} when the initial position and initial target are far apart. When the transient flight portions  are  considered (``With Transients" column in~Table~\ref{tab:quad_RMSE_merged}), the \wardi{NR-based technique} outperforms NMPC on all but a single trajectory (Lemniscate B).
+
+\begin{table}
+  \centering
+  \caption{Quadrotor - Average Computation Time Comparison for the NR-based technique and NMPC}
+  \label{tab:quad_computation_time_comparison}
+  \begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{Trajectory} & \textbf{NR Std [ms]} & \textbf{NMPC [ms]} \\
+    \hline
+    Circle A       & \textbf{2.381 $\pm$ 0.206} & 13.036 $\pm$ 0.173 \\
+    \hline
+    Circle B       & \textbf{2.426 $\pm$ 0.201} & 13.352 $\pm$ 0.139 \\
+    \hline
+    Lemniscate A   & \textbf{2.438 $\pm$ 0.239} & 13.088 $\pm$ 0.092 \\
+    \hline
+    Lemniscate B   & \textbf{2.486 $\pm$ 0.200} & 13.288 $\pm$ 0.246 \\
+    \hline
+    Lemniscate C   & \textbf{2.397 $\pm$ 0.200} & 9.216 $\pm$ 5.646 \\
+    \hline
+    Helix A        & \textbf{2.480 $\pm$ 0.222} & 13.307 $\pm$ 0.196 \\
+    \hline
+    Helix B        & \textbf{2.471 $\pm$ 0.271} & 13.294 $\pm$ 0.110 \\
+    \hline
+    Circle C       & \textbf{2.454 $\pm$ 0.255} & 13.705 $\pm$ 0.222 \\
+    \hline
+    Sawtooth       & \textbf{2.507 $\pm$ 0.254} & 13.329 $\pm$ 0.140 \\
+    \hline
+    Triangle       & \textbf{2.417 $\pm$ 0.196} & 13.182 $\pm$ 0.291 \\
+    \hline
+  \end{tabular}
+\end{table}
+
+
+Next, Table~\ref{tab:quad_computation_time_comparison} shows that the computation times for \wardi{NMPC are between {\color{red} 5.32 and 5.59} times larger than that for the \evanns{NR-based technique} across most trajectories, and its standard deviations are larger as well. {\color{red} The exception is Lemniscate~C, where the NMPC mean solve time drops to \qty{9.22}{ms} with a standard deviation of \qty{5.65}{ms}---far larger than the under \qty{0.30}{ms} seen on every other trajectory---indicating highly variable solver behavior; the ratio for this case is 3.84. Across all remaining trajectories the ratio is consistent at 5.3--5.6.}
+Furthermore, the computing times for the NR-based technique  are fairly independent of the trajectory that is tracked, whereas the NMPC cannot finish the tracking assignments for the two trajectories with yawing components, the Yawing Helix (Helix B) and Yawing Circle (Circle C).  
+As a matter of fact, 
+Helix B and Circle C differ from Helix A and Circle A by including yaw variations. This seems to increase the required computing times for NMPC in such a way that it can no \wardi{longer meet the} \qty{100}{Hz} rate constraint.} Consequently, each attempt to track the yawing trajectories led to crashes. Even on the standard trajectories, NMPC computation on average often took nearly the entire \qty{10}{ms} allotted for each iteration, often taking longer due to the high variability. This inconsistency in command publishing rate prevented smooth flight and caused undesirable characteristics such as shaking behaviors, even for trajectories in which the clipped transient data showed superior RMSE tracking performance in comparison to the \evanns{NR-based technique.} {\color{red} The decoupled compute-and-publish architecture described above mitigates this issue by ensuring that command publication remains consistently timed at \qty{100}{\hertz} regardless of solver runtime, with the buffered open-loop control trajectory filling the gaps between solves. This is the key improvement relative to the initial implementation, and it is consistent with the recommendation in Findeisen~\cite{Findeisen2004} (Section~4.5) that computational delays be compensated by solving the NMPC problem for a state predicted one sampling step ahead, so that the resulting control input is available and correctly timed when applied. Nevertheless, as Table~\ref{tab:quad_computation_time_comparison} shows, the mean NMPC solve time of approximately \qty{13}{ms} still exceeds the \qty{10}{ms} sampling period. For the yawing trajectories (Helix~B and Circle~C), this residual delay is sufficient to prevent stable closed-loop flight, resulting in the crashes observed in these cases.} \evanns{Thus for both the quadrotor and the blimp, while the NMPC method converges to a solution under its standard termination criteria, this convergence is not always fast enough for the sampling rates required for stable high-frequency flight control, resulting in degraded tracking performance and flight characteristics.
+}
+
+Lastly, average energy expenditures across all tracking controllers for both quadrotor and blimp are shown in Table~\ref{tab:energy_expenditure_comparison}. The \evanns{NR-based technique} has the lowest CPU energy expenditure across all controllers used for both the blimp and the quadrotor.
+
+%The key result in this section concerns the comparative RMSE between NMPC and the NR-based tracking technique. Specifically, NMPC performs better when it is not overwhelmed by computations, and may display worse performance, to the point of crashing, when its computations approach the upper-bound constraints on its computational constraints. The reason for this is that NMPC is more computing intensive than the NR-based technique while it is more precise. Therefore, trajectories requiring high computing loads, NMPC would have less error than the NR-based technique but may be unable  to track the reference trajectories if they have ``clipped transients" associated with yawing.
+%It is this realization that suggests that the NR-based technique may complement NMPC.
+
+
+
+\begin{table}
+  \centering
+  \caption{Average CPU Energy Expenditure Comparison per Method on Blimp and Quadrotor}
+  \label{tab:energy_expenditure_comparison}
+  \begin{tabular}{|c|c|}
+    \hline
+    \textbf{Method} & \textbf{Avg. CPU Energy Expenditure [\boldmath$\mu$J]} \\
+    \hline
+    Blimp NRT   & \boldmath{$1.25 \times 10^4 \pm 4.29 \times 10^3$} \\
+    \hline
+    Blimp MPC  & $2.04 \times 10^5 \pm 3.80 \times 10^4$ \\
+    \hline
+    Blimp FBL  & $3.06 \times 10^4 \pm 2.22 \times 10^4$ \\
+    \hline
+    Quad NRT & \boldmath{$1.73 \times 10^{4} \pm 7.78 \times 10^{3}$} \\
+    \hline
+    Quad MPC & $6.15 \times 10^{4} \pm 2.41 \times 10^{4}$ \\
+    \hline
+  \end{tabular}
+\end{table}

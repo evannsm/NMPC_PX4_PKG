@@ -95,7 +95,11 @@ This gives the NMPC a fully consistent reference trajectory in both state space 
 
 - [quad_trajectories](https://github.com/evannsmc/quad_trajectories) — trajectory definitions
 - [quad_platforms](https://github.com/evannsmc/quad_platforms) — platform abstraction
+<<<<<<< Updated upstream
 - [ros2_logger](https://github.com/evannsmc/ROS2Logger) — experiment logging
+=======
+- [ROS2Logger](https://github.com/evannsmc/ROS2Logger) — experiment logging
+>>>>>>> Stashed changes
 - [px4_msgs](https://github.com/PX4/px4_msgs) — PX4 ROS 2 message definitions
 - [Acados](https://docs.acados.org/) and `acados_template`
 - SciPy
@@ -203,12 +207,15 @@ Transactions on Robotics 2025
 
 - [2025_NewtonRaphson_QuadrotorComplete](https://github.com/evannsmc/2025_NewtonRaphson_QuadrotorComplete)
 - [Blimp_SimHardware_NR_MPC_FBL_BodyOfWork2024](https://github.com/evannsmc/Blimp_SimHardware_NR_MPC_FBL_BodyOfWork2024)
+<<<<<<< Updated upstream
 
 ## Website
 
 This project is part of the [evannsmc open-source portfolio](https://www.evannsmc.com/projects).
 
 - [Project page](https://www.evannsmc.com/projects/nmpc-acados)
+=======
+>>>>>>> Stashed changes
 
 ## License
 
