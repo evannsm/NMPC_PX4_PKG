@@ -1,5 +1,5 @@
 # Nonlinear NMPC for PX4-ROS2 Deployment
-This package was created during my PhD originally as a basis of comparison with the well-established and well-respected NMPC technique in order to make useful comparisons against novel control strategies (namely, Newton-Raphson Flow) developed at Georgia Tech's FACTSLab. We have compared this against the Newton-Raphson controller available in my other repository [`NRFlow_PX4_PKG`](https://github.com/evannsm/NRFlow_PX4_PKG)
+This package was created during my PhD originally as a basis of comparison with the well-established and well-respected NMPC technique in order to make useful comparisons against novel control strategies (namely, Newton-Raphson Flow) developed at Georgia Tech's FACTSLab. We have compared this against the Newton-Raphson controller available in my other repository [`NRFlow_PX4_PKG`](https://github.com/evannsmc/NRFlow_PX4_PKG)
 
 
 This package allows for fast, compiled NMPC computations via Acados for a quadrotor UAV running PX4 alongside the MicroXRCE ROS2 bridge. The simulation version should work well with the `gz_x500` SITL model as well as the older `iris` model. The code has CLI inputs that allow the user to switch between sim/hardware mode as well as trajectory speeds. Trajectories are hard-coded into the code. Just change the `reffunc` variable to one of the available trajectory functions inside the code.
@@ -13,7 +13,7 @@ Pre-requisites are below, complete those first before running
 ```bash
 cd <your_ros2_ws/src>
 git init
-git remote add origin git@github.com:evannsm/NMPC_PX4_PKG.git
+git remote add origin git@github.com:evannsmc/NMPC_PX4_PKG.git
 git fetch origin
 git checkout -b main --track origin/main
 git submodule update --init --recursive
@@ -110,19 +110,19 @@ PY
 
 # Papers and their repositories:
 American Control Conference 2024 - [see paper here](https://coogan.ece.gatech.edu/papers/pdf/cuadrado2024tracking.pdf)  
-[Personal Version of Repository](https://github.com/evannsm/MoralesCuadrado_ACC2024)  
+[Personal Version of Repository](https://github.com/evannsmc/MoralesCuadrado_ACC2024)  
 [Official FACTSLab Repository](https://github.com/gtfactslab/MoralesCuadrado_Llanes_ACC2024)  
 
 Transactions on Control Systems Technology 2025 - [see paper here](https://arxiv.org/abs/2508.14185)  
-[Personal Version of Repository](https://github.com/evannsm/MoralesCuadrado_Baird_TCST2025)  
+[Personal Version of Repository](https://github.com/evannsmc/MoralesCuadrado_Baird_TCST2025)  
 [Official FACTSLab Repository](https://github.com/gtfactslab/Baird_MoralesCuadrado_TRO_2025)  
 
 Transactions on Robotics 2025  
-[Personal Version of Repository](https://github.com/evannsm/MoralesCuadrado_Baird_TCST2025)  
+[Personal Version of Repository](https://github.com/evannsmc/MoralesCuadrado_Baird_TCST2025)  
 [Official FACTSLab Repository](https://github.com/gtfactslab/MoralesCuadrado_Baird_TCST2025)  
 
 # Works:
 Repositories that hold other Newton-Raphson work  
-[2025_NewtonRaphson_QuadrotorComplete](https://github.com/evannsm/2025_NewtonRaphson_QuadrotorComplete)    
-[Blimp_SimHardware_NR_MPC_FBL_BodyOfWork2024](https://github.com/evannsm/Blimp_SimHardware_NR_MPC_FBL_BodyOfWork2024)  
+[2025_NewtonRaphson_QuadrotorComplete](https://github.com/evannsmc/2025_NewtonRaphson_QuadrotorComplete)    
+[Blimp_SimHardware_NR_MPC_FBL_BodyOfWork2024](https://github.com/evannsmc/Blimp_SimHardware_NR_MPC_FBL_BodyOfWork2024)  
 

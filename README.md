@@ -7,7 +7,7 @@
 
 A ROS 2 Nonlinear Model Predictive Controller (NMPC) for quadrotors using the [Acados](https://docs.acados.org/) solver. Formulates the tracking problem with an error-based cost in Euler angle representation and uses `atan2`-based yaw wrapping for correct angular error computation.
 
-This package was created during my PhD originally as a basis of comparison with the well-established NMPC technique in order to make useful comparisons against novel control strategies (namely, Newton-Raphson Flow) developed at Georgia Tech's FACTSLab. We have compared this against the Newton-Raphson controller available in [`NRFlow_PX4_PKG`](https://github.com/evannsm/NRFlow_PX4_PKG).
+This package was created during my PhD originally as a basis of comparison with the well-established NMPC technique in order to make useful comparisons against novel control strategies (namely, Newton-Raphson Flow) developed at Georgia Tech's FACTSLab. We have compared this against the Newton-Raphson controller available in [`NRFlow_PX4_PKG`](https://github.com/evannsmc/NRFlow_PX4_PKG).
 
 ## Approach
 
@@ -93,9 +93,9 @@ This gives the NMPC a fully consistent reference trajectory in both state space 
 
 ## Dependencies
 
-- [quad_trajectories](https://github.com/evannsm/quad_trajectories) — trajectory definitions
-- [quad_platforms](https://github.com/evannsm/quad_platforms) — platform abstraction
-- [ros2_logger](https://github.com/evannsm/ROS2Logger) — experiment logging
+- [quad_trajectories](https://github.com/evannsmc/quad_trajectories) — trajectory definitions
+- [quad_platforms](https://github.com/evannsmc/quad_platforms) — platform abstraction
+- [ros2_logger](https://github.com/evannsmc/ROS2Logger) — experiment logging
 - [px4_msgs](https://github.com/PX4/px4_msgs) — PX4 ROS 2 message definitions
 - [Acados](https://docs.acados.org/) and `acados_template`
 - SciPy
@@ -122,7 +122,7 @@ nmpc_acados_px4/
 
 ```bash
 # Inside a ROS 2 workspace src/ directory
-git clone git@github.com:evannsm/nmpc_acados_px4.git
+git clone git@github.com:evannsmc/nmpc_acados_px4.git
 cd .. && colcon build --symlink-install
 ```
 
@@ -188,21 +188,21 @@ If it runs and plots with no errors, you're done!
 ## Papers and Repositories
 
 American Control Conference 2024 — [paper](https://coogan.ece.gatech.edu/papers/pdf/cuadrado2024tracking.pdf)
-| [Personal repo](https://github.com/evannsm/MoralesCuadrado_ACC2024)
+| [Personal repo](https://github.com/evannsmc/MoralesCuadrado_ACC2024)
 | [FACTSLab repo](https://github.com/gtfactslab/MoralesCuadrado_Llanes_ACC2024)
 
 Transactions on Control Systems Technology 2025 — [paper](https://arxiv.org/abs/2508.14185)
-| [Personal repo](https://github.com/evannsm/MoralesCuadrado_Baird_TCST2025)
+| [Personal repo](https://github.com/evannsmc/MoralesCuadrado_Baird_TCST2025)
 | [FACTSLab repo](https://github.com/gtfactslab/Baird_MoralesCuadrado_TRO_2025)
 
 Transactions on Robotics 2025
-| [Personal repo](https://github.com/evannsm/MoralesCuadrado_Baird_TCST2025)
+| [Personal repo](https://github.com/evannsmc/MoralesCuadrado_Baird_TCST2025)
 | [FACTSLab repo](https://github.com/gtfactslab/MoralesCuadrado_Baird_TCST2025)
 
 ### Related Work
 
-- [2025_NewtonRaphson_QuadrotorComplete](https://github.com/evannsm/2025_NewtonRaphson_QuadrotorComplete)
-- [Blimp_SimHardware_NR_MPC_FBL_BodyOfWork2024](https://github.com/evannsm/Blimp_SimHardware_NR_MPC_FBL_BodyOfWork2024)
+- [2025_NewtonRaphson_QuadrotorComplete](https://github.com/evannsmc/2025_NewtonRaphson_QuadrotorComplete)
+- [Blimp_SimHardware_NR_MPC_FBL_BodyOfWork2024](https://github.com/evannsmc/Blimp_SimHardware_NR_MPC_FBL_BodyOfWork2024)
 
 ## Website
 
