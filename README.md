@@ -211,18 +211,14 @@ Transactions on Robotics 2025
 
 - [2025_NewtonRaphson_QuadrotorComplete](https://github.com/evannsmc/2025_NewtonRaphson_QuadrotorComplete)
 - [Blimp_SimHardware_NR_MPC_FBL_BodyOfWork2024](https://github.com/evannsmc/Blimp_SimHardware_NR_MPC_FBL_BodyOfWork2024)
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
+
 
 ## Website
 
 This project is part of the [evannsmc open-source portfolio](https://www.evannsmc.com/projects).
 
 - [Project page](https://www.evannsmc.com/projects/nmpc-acados)
-=======
->>>>>>> Stashed changes
+
 
 ## License
 
