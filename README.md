@@ -9,6 +9,32 @@ A ROS 2 Nonlinear Model Predictive Controller (NMPC) for quadrotors using the [A
 
 This package was created during my PhD originally as a basis of comparison with the well-established NMPC technique in order to make useful comparisons against novel control strategies (namely, Newton-Raphson Flow) developed at Georgia Tech's FACTSLab. We have compared this against the Newton-Raphson controller available in [`NRFlow_PX4_PKG`](https://github.com/evannsmc/NRFlow_PX4_PKG).
 
+## Workspace Layout (read this first)
+
+`nmpc_acados_px4` is **not standalone** — it is a ROS 2 package that imports from its sibling packages (`quad_platforms`, `quad_trajectories`, `ROS2Logger`) and the PX4 message definitions (`px4_msgs`). For these dependencies to resolve, all of them must live side-by-side under the `src/` directory of a single ROS 2 workspace so that `colcon build` discovers and builds them together:
+
+```
+ros2px4_ws/                  # your ROS 2 workspace (any name)
+└── src/
+    ├── nmpc_acados_px4/      # this package
+    ├── quad_platforms/       # platform abstraction (mass, geometry, limits)
+    ├── quad_trajectories/    # trajectory definitions
+    ├── ROS2Logger/           # CSV experiment logging (imported as `ros2_logger`)
+    └── px4_msgs/             # PX4 ROS 2 message definitions
+```
+
+Then build once from the workspace root so every package is sourced into the same overlay:
+
+```bash
+cd ros2px4_ws
+colcon build --symlink-install
+source install/setup.bash
+```
+
+If you clone `nmpc_acados_px4` on its own and try to build it, the import of `quad_platforms` / `ros2_logger` and the `px4_msgs` dependency will fail — the other packages simply aren't on the ROS 2 package path. Cloning them as siblings under the same `src/` is what makes the dependencies "work out."
+
+> Note: `ROS2Logger` is the GitHub repository name; the package it installs (and the name you `import`) is `ros2_logger`. Acados and SciPy are installed separately (see [Acados Setup](#acados-setup) below), not as workspace packages.
+
 ## Approach
 
 This controller solves a finite-horizon optimal control problem at every timestep:
@@ -120,11 +146,24 @@ nmpc_acados_px4/
 
 ## Installation
 
+Clone this package **and its sibling dependencies** into the same workspace `src/` (see [Workspace Layout](#workspace-layout-read-this-first)), then build from the workspace root:
+
 ```bash
-# Inside a ROS 2 workspace src/ directory
+mkdir -p ros2px4_ws/src && cd ros2px4_ws/src
+
+# This package plus its sibling source dependencies
 git clone git@github.com:evannsmc/nmpc_acados_px4.git
+git clone git@github.com:evannsmc/quad_platforms.git
+git clone git@github.com:evannsmc/quad_trajectories.git
+git clone git@github.com:evannsmc/ROS2Logger.git
+git clone https://github.com/PX4/px4_msgs.git
+
+# Build all packages together so the dependencies resolve
 cd .. && colcon build --symlink-install
+source install/setup.bash
 ```
+
+Acados and SciPy still need to be installed separately — see [Acados Setup](#acados-setup) below.
 
 ## Acados Setup
 
