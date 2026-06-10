@@ -95,15 +95,7 @@ This gives the NMPC a fully consistent reference trajectory in both state space 
 
 - [quad_trajectories](https://github.com/evannsmc/quad_trajectories) — trajectory definitions
 - [quad_platforms](https://github.com/evannsmc/quad_platforms) — platform abstraction
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 - [ros2_logger](https://github.com/evannsmc/ROS2Logger) — experiment logging
-=======
-- [ROS2Logger](https://github.com/evannsmc/ROS2Logger) — experiment logging
->>>>>>> Stashed changes
-=======
-- [ros2_logger](https://github.com/evannsmc/ROS2Logger) — experiment logging
->>>>>>> Stashed changes
 - [px4_msgs](https://github.com/PX4/px4_msgs) — PX4 ROS 2 message definitions
 - [Acados](https://docs.acados.org/) and `acados_template`
 - SciPy
