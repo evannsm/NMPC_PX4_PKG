@@ -146,32 +146,56 @@ nmpc_acados_px4/
 
 ## Installation
 
-### Quick setup (recommended — Docker workflow)
+There are four ways to set this up, from easiest to most manual. **If you just want it running, use option 1 (Docker + script).** All of them produce the same [workspace layout](#workspace-layout-read-this-first).
 
-If you build/run via [PX4-ROS2-Docker](https://github.com/evannsmc/PX4-ROS2-Docker), the helper script bootstraps the whole workspace — it clones the Docker repo, lays out `src/` with every sibling package, and symlinks the workspace to the container's mount point so `make run` just works:
+| # | Path | Effort | When to use |
+|---|------|--------|-------------|
+| 1 | **Docker + script** | easiest | You want the fastest, most reproducible setup. Script clones everything and links it to the container. |
+| 2 | **Docker (manual)** | easy | Same container, but you prefer running the `vcs import` / `make` steps yourself. |
+| 3 | **Script (native)** | medium | You build directly on the host (no Docker) and want the workspace laid out for you. |
+| 4 | **Manual (native)** | most manual | You want full control of every clone and build step on the host. |
+
+> The Docker image already ships ROS 2, a prebuilt `px4_msgs` overlay, and the Python deps (acados interface, SciPy/JAX). Native builds (options 3–4) require you to install ROS 2, acados, and `px4_msgs` yourself.
+
+### 1. Docker + script (recommended)
+
+The bundled script clones [PX4-ROS2-Docker](https://github.com/evannsmc/PX4-ROS2-Docker), lays out `src/` with every sibling package, and symlinks the workspace to the container's mount point so `make run` works with no arguments:
 
 ```bash
-./scripts/setup_px4_ros2_ws.sh            # full controller stack
-./scripts/setup_px4_ros2_ws.sh --minimal  # only what NMPC needs
+./scripts/setup_ws_docker.sh            # full controller stack
+./scripts/setup_ws_docker.sh --minimal  # only what NMPC needs
 ```
 
-Run `./scripts/setup_px4_ros2_ws.sh --help` for options (`--ws`, `--docker`, `--https`). In the Docker workflow `px4_msgs` is **not** cloned into `src/` — the image ships a prebuilt copy at `/opt/ws_px4_msgs`. After setup, follow [PX4-ROS2-Docker](https://github.com/evannsmc/PX4-ROS2-Docker) for `make build` / `make run` / `make build_ros`.
+`--help` lists options (`--ws`, `--docker`, `--https`). Here `px4_msgs` is intentionally **not** cloned into `src/` — the image ships a prebuilt copy at `/opt/ws_px4_msgs`. Then, from the Docker repo: `make build` → `make run` → `make build_ros`.
 
-### Manual setup (native build)
+### 2. Docker (manual)
 
-To build natively (no Docker), clone this package **and its sibling dependencies** into the same workspace `src/` (see [Workspace Layout](#workspace-layout-read-this-first)), then build from the workspace root:
+Follow the [PX4-ROS2-Docker README](https://github.com/evannsmc/PX4-ROS2-Docker): clone it, `vcs import` the controller packages into your workspace `src/`, then `make run` / `make build_ros`. Identical result to option 1, done by hand.
+
+### 3. Script (native, no Docker)
+
+To build on the host, this script lays out the workspace **including `px4_msgs`** and can optionally build it:
+
+```bash
+./scripts/setup_ws_native.sh                 # lay out ~/ros2px4_ws/src
+./scripts/setup_ws_native.sh --minimal --build  # only NMPC's deps, then colcon build
+```
+
+Run it from this checkout and it symlinks the current repo into the workspace instead of re-cloning. You still need ROS 2, acados, and SciPy installed (see [Acados Setup](#acados-setup)).
+
+### 4. Manual (native, no Docker)
+
+Clone this package **and its sibling dependencies** into one workspace `src/`, then build from the workspace root:
 
 ```bash
 mkdir -p ros2px4_ws/src && cd ros2px4_ws/src
 
-# This package plus its sibling source dependencies
 git clone git@github.com:evannsmc/nmpc_acados_px4.git
 git clone git@github.com:evannsmc/quad_platforms.git
 git clone git@github.com:evannsmc/quad_trajectories.git
 git clone git@github.com:evannsmc/ROS2Logger.git
 git clone https://github.com/PX4/px4_msgs.git
 
-# Build all packages together so the dependencies resolve
 cd .. && colcon build --symlink-install
 source install/setup.bash
 ```

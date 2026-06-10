@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # =============================================================================
-# setup_px4_ros2_ws.sh
+# setup_ws_docker.sh
 # -----------------------------------------------------------------------------
 # Bootstraps a ROS 2 workspace for the PX4 controllers stack and links it to
 # the PX4-ROS2-Docker repo so `make run` mounts it into the container.
+# (For a Docker-free native checkout, use setup_ws_native.sh instead.)
 #
 # What it does (all steps are idempotent / safe to re-run):
 #   1. Clones (or updates) PX4-ROS2-Docker into $DOCKER_DIR.
@@ -19,7 +20,7 @@
 #       src/ would shadow that prebuilt copy.
 #
 # Usage:
-#   ./setup_px4_ros2_ws.sh [--ws DIR] [--docker DIR] [--minimal] [--https]
+#   ./setup_ws_docker.sh [--ws DIR] [--docker DIR] [--minimal] [--https]
 #
 #   --ws DIR       Workspace root        (default: ~/ros2px4_ws)
 #   --docker DIR   PX4-ROS2-Docker clone (default: ~/PX4-ROS2-Docker)
