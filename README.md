@@ -9,6 +9,45 @@ A ROS 2 Nonlinear Model Predictive Controller (NMPC) for quadrotors using the [A
 
 This package was created during my PhD originally as a basis of comparison with the well-established NMPC technique in order to make useful comparisons against novel control strategies (namely, Newton-Raphson Flow) developed at Georgia Tech's FACTSLab. We have compared this against the Newton-Raphson controller available in [`NRFlow_PX4_PKG`](https://github.com/evannsmc/NRFlow_PX4_PKG).
 
+<div align="center">
+
+---
+
+**[<kbd> <br> Setup <br> </kbd>](#installation)**
+**[<kbd> <br> Workspace Layout <br> </kbd>](#workspace-layout-read-this-first)**
+**[<kbd> <br> Approach <br> </kbd>](#approach)**
+**[<kbd> <br> Usage <br> </kbd>](#usage)**
+**[<kbd> <br> Acados Setup <br> </kbd>](#acados-setup)**
+**[<kbd> <br> Papers <br> </kbd>](#papers-and-repositories)**
+
+---
+
+</div>
+
+<details>
+<summary><b>📖 Table of Contents</b></summary>
+
+- [Workspace Layout](#workspace-layout-read-this-first)
+- [Approach](#approach)
+- [Key Features](#key-features)
+- [Cost Weights](#cost-weights)
+- [Usage](#usage)
+  - [CLI Options](#cli-options)
+- [Feedforward for `fig8_contraction`](#feedforward-for-fig8_contraction)
+- [Dependencies](#dependencies)
+- [Package Structure](#package-structure)
+- [Installation](#installation)
+  - [1. Docker + script (recommended)](#1-docker--script-recommended)
+  - [2. Docker (manual)](#2-docker-manual)
+  - [3. Script (native, no Docker)](#3-script-native-no-docker)
+  - [4. Manual (native, no Docker)](#4-manual-native-no-docker)
+- [Acados Setup](#acados-setup)
+- [Papers and Repositories](#papers-and-repositories)
+- [Website](#website)
+- [License](#license)
+
+</details>
+
 ## Workspace Layout (read this first)
 
 `nmpc_acados_px4` is **not standalone** — it is a ROS 2 package that imports from its sibling packages (`quad_platforms`, `quad_trajectories`, `ROS2Logger`) and the PX4 message definitions (`px4_msgs`). For these dependencies to resolve, all of them must live side-by-side under the `src/` directory of a single ROS 2 workspace so that `colcon build` discovers and builds them together:
