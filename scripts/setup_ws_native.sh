@@ -36,14 +36,15 @@ MINIMAL=0
 USE_SSH=1
 DO_BUILD=0
 
-# Package set. Format: "dirname owner/repo required".
-# px4_msgs comes from the PX4 org and is always cloned for native builds.
+# Package set. Format: "dirname owner/repo required [branch]".
+# px4_msgs is pinned to the PX4 v1.16 minimal-messages fork and always cloned
+# for native builds.
 PACKAGES=(
   "quad_platforms      evannsmc/quad_platforms   1"
   "quad_trajectories   evannsmc/quad_trajectories 1"
   "ROS2Logger          evannsmc/ROS2Logger       1"
   "nmpc_acados_px4      evannsmc/nmpc_acados_px4   1"
-  "px4_msgs            PX4/px4_msgs              1"
+  "px4_msgs            evannsmc/px4_msgs         1 v1.16_minimal_msgs"
   "newton_raphson_px4   evannsmc/newton_raphson_px4 0"
   "geometric_px4        evannsmc/geometric_px4    0"
 )
@@ -68,10 +69,9 @@ done
 
 WS_DIR="${WS_DIR/#\~/$HOME}"
 
-# git@ for our repos; PX4 org is public, prefer https unless SSH explicitly fine.
+# Build a clone URL for owner/repo honouring the SSH/HTTPS choice.
 repo_url() {
   local slug="$1"
-  if [[ "${slug%%/*}" == "PX4" ]]; then echo "https://github.com/${slug}.git"; return; fi
   if [[ "$USE_SSH" -eq 1 ]]; then echo "git@github.com:${slug}.git"
   else echo "https://github.com/${slug}.git"; fi
 }
@@ -91,7 +91,7 @@ ok "src/ ready"
 # ── 2. Populate src/ ────────────────────────────────────────────────────────
 info "Populating ${WS_DIR}/src"
 for entry in "${PACKAGES[@]}"; do
-  read -r dir slug required <<<"$entry"
+  read -r dir slug required branch <<<"$entry"
   if [[ "$MINIMAL" -eq 1 && "$required" -eq 0 ]]; then
     skip "${dir} (skipped: --minimal)"
     continue
@@ -108,8 +108,8 @@ for entry in "${PACKAGES[@]}"; do
     ln -sn "${SELF_ROOT}" "${target}"
     ok "linked ${dir} -> ${SELF_ROOT} (current checkout)"
   else
-    git clone "$(repo_url "${slug}")" "${target}"
-    ok "cloned ${dir}"
+    git clone ${branch:+--branch "${branch}"} "$(repo_url "${slug}")" "${target}"
+    ok "cloned ${dir}${branch:+ @ ${branch}}"
   fi
 done
 
