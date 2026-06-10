@@ -13,18 +13,18 @@ This package was created during my PhD originally as a basis of comparison with 
 
 ---
 
-**[<kbd> <br> Setup <br> </kbd>](#installation)**
-**[<kbd> <br> Workspace Layout <br> </kbd>](#workspace-layout-read-this-first)**
-**[<kbd> <br> Approach <br> </kbd>](#approach)**
-**[<kbd> <br> Usage <br> </kbd>](#usage)**
-**[<kbd> <br> Acados Setup <br> </kbd>](#acados-setup)**
-**[<kbd> <br> Papers <br> </kbd>](#papers-and-repositories)**
+**[<kbd> <br> Setup <br> </kbd>](#installation)** 
+**[<kbd> <br> Workspace Layout <br> </kbd>](#workspace-layout-read-this-first)** 
+**[<kbd> <br> Approach <br> </kbd>](#approach)** 
+**[<kbd> <br> Usage <br> </kbd>](#usage)** 
+**[<kbd> <br> Acados Setup <br> </kbd>](#acados-setup)** 
+**[<kbd> <br> Papers <br> </kbd>](#papers-and-repositories)** 
 
 ---
 
 </div>
 
-<details>
+<details open>
 <summary><b>📖 Table of Contents</b></summary>
 
 - [Workspace Layout](#workspace-layout-read-this-first)
