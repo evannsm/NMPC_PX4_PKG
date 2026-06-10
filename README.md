@@ -146,7 +146,20 @@ nmpc_acados_px4/
 
 ## Installation
 
-Clone this package **and its sibling dependencies** into the same workspace `src/` (see [Workspace Layout](#workspace-layout-read-this-first)), then build from the workspace root:
+### Quick setup (recommended — Docker workflow)
+
+If you build/run via [PX4-ROS2-Docker](https://github.com/evannsmc/PX4-ROS2-Docker), the helper script bootstraps the whole workspace — it clones the Docker repo, lays out `src/` with every sibling package, and symlinks the workspace to the container's mount point so `make run` just works:
+
+```bash
+./scripts/setup_px4_ros2_ws.sh            # full controller stack
+./scripts/setup_px4_ros2_ws.sh --minimal  # only what NMPC needs
+```
+
+Run `./scripts/setup_px4_ros2_ws.sh --help` for options (`--ws`, `--docker`, `--https`). In the Docker workflow `px4_msgs` is **not** cloned into `src/` — the image ships a prebuilt copy at `/opt/ws_px4_msgs`. After setup, follow [PX4-ROS2-Docker](https://github.com/evannsmc/PX4-ROS2-Docker) for `make build` / `make run` / `make build_ros`.
+
+### Manual setup (native build)
+
+To build natively (no Docker), clone this package **and its sibling dependencies** into the same workspace `src/` (see [Workspace Layout](#workspace-layout-read-this-first)), then build from the workspace root:
 
 ```bash
 mkdir -p ros2px4_ws/src && cd ros2px4_ws/src
