@@ -34,7 +34,7 @@ This package was created during my PhD originally as a basis of comparison with 
 - [Cost Weights](#cost-weights)
 - [Usage](#usage)
   - [CLI Options](#cli-options)
-- [Feedforward for `fig8_contraction`](#feedforward-for-fig8_contraction)
+- [Feedforward for `fig8_akash`](#feedforward-for-fig8_akash)
 - [Dependencies](#dependencies)
 - [Package Structure](#package-structure)
 - [Installation](#installation)
@@ -121,9 +121,9 @@ ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_horz
 # Hardware flight with logging
 ros2 run nmpc_acados_px4 run_node --platform hw --trajectory helix --log
 
-# fig8_contraction with feedforward, logged with _ff marker in filename
-ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_contraction --ff --log
-# -> logs to: sim_nmpc_acados_px4_fig8_contraction_ff_1x.csv
+# fig8_akash with feedforward, logged with _ff marker in filename
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_akash --ff --log
+# -> logs to: sim_nmpc_acados_px4_fig8_akash_ff_1x.csv
 ```
 
 ### CLI Options
@@ -139,11 +139,11 @@ ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_contraction -
 | `--short`                                       | Short variant (fig8_vert)                                      |
 | `--spin`                                        | Enable yaw rotation                                            |
 | `--flight-period SEC`                           | Custom flight duration                                         |
-| `--ff`                                          | Mark log filename with `_ff` (only valid with `fig8_contraction`) |
+| `--ff`                                          | Mark log filename with `_ff` (only valid with `fig8_akash`) |
 
-## Feedforward for `fig8_contraction`
+## Feedforward for `fig8_akash`
 
-When the `fig8_contraction` trajectory is selected, the node computes a differential-flatness feedforward over the full NMPC horizon at each control step, using the same approach as the contraction controller.
+When the `fig8_akash` trajectory is selected, the node computes a differential-flatness feedforward over the full NMPC horizon at each control step, using the same approach as the contraction controller.
 
 **How it works:**
 

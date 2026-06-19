@@ -345,7 +345,7 @@ class OffboardControl(Node):
         if self.feedforward:
             print("  Compiling feedforward (generate_feedforward_trajectory)...")
             ctx = TrajContext(sim=self.sim, hover_mode=self.hover_mode, spin=self.spin,
-                              double_speed=False if self.ref_type == TrajectoryType.FIG8_CONTRACTION else self.double_speed,
+                              double_speed=False if self.ref_type == TrajectoryType.FIG8_AKASH else self.double_speed,
                               short=self.short)
             traj_fn = TRAJ_REGISTRY[self.ref_type]
             horizon, num_steps = self.horizon, self.num_steps
@@ -369,7 +369,7 @@ class OffboardControl(Node):
         print("  Storing persistent JIT for main trajectory...")
         _ctx_main = TrajContext(
             sim=self.sim, hover_mode=self.hover_mode, spin=self.spin,
-            double_speed=False if self.ref_type == TrajectoryType.FIG8_CONTRACTION else self.double_speed,
+            double_speed=False if self.ref_type == TrajectoryType.FIG8_AKASH else self.double_speed,
             short=self.short)
         _traj_fn_main = TRAJ_REGISTRY[self.ref_type]
         _horizon, _num_steps = self.horizon, self.num_steps
@@ -734,7 +734,7 @@ class OffboardControl(Node):
         """Compute control input using error-based NMPC.
 
         self.reff   – (N, 9) state reference [p, v, euler] per stage.
-                      For fig8_contraction the euler columns carry the feedforward
+                      For fig8_akash the euler columns carry the feedforward
                       roll/pitch/yaw; otherwise they are [0, 0, yaw].
         self.u_ff_traj – (N, 4) feedforward control [df, dphi, dth, dpsi] per
                       stage, or None (→ hover_ctrl used inside solver).

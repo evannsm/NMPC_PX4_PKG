@@ -53,12 +53,12 @@ ros2 run nmpc_acados_px4 run_node --platform sim --trajectory yaw_only
 ros2 run nmpc_acados_px4 run_node --platform sim --trajectory yaw_only --double-speed
 
 # Figure-8 Contraction (no feedforward marker)
-ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_contraction
-ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_contraction --double-speed
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_akash
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_akash --double-speed
 
 # Figure-8 Contraction with feedforward log marker
-ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_contraction --ff
-ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_contraction --ff --double-speed
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_akash --ff
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_akash --ff --double-speed
 ```
 
 ---
@@ -81,8 +81,8 @@ ros2 run nmpc_acados_px4 run_node --platform hw --trajectory helix
 ros2 run nmpc_acados_px4 run_node --platform hw --trajectory helix --double-speed
 
 # Figure-8 Contraction
-ros2 run nmpc_acados_px4 run_node --platform hw --trajectory fig8_contraction
-ros2 run nmpc_acados_px4 run_node --platform hw --trajectory fig8_contraction --double-speed
+ros2 run nmpc_acados_px4 run_node --platform hw --trajectory fig8_akash
+ros2 run nmpc_acados_px4 run_node --platform hw --trajectory fig8_akash --double-speed
 ```
 
 ---
@@ -101,11 +101,11 @@ ros2 run nmpc_acados_px4 run_node \
   --spin \
   --log
 
-# Auto-generated filename: sim_nmpc_acados_px4_fig8_contraction_ff_1x.csv
-ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_contraction --ff --log
+# Auto-generated filename: sim_nmpc_acados_px4_fig8_akash_ff_1x.csv
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_akash --ff --log
 
-# Auto-generated filename: sim_nmpc_acados_px4_fig8_contraction_ff_2x.csv
-ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_contraction --ff --double-speed --log
+# Auto-generated filename: sim_nmpc_acados_px4_fig8_akash_ff_2x.csv
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_akash --ff --double-speed --log
 ```
 
 ### Custom Log Filename
@@ -140,7 +140,7 @@ ros2 run nmpc_acados_px4 run_node \
 | Argument         | Required | Values                                                                               | Description                        |
 | ---------------- | -------- | ------------------------------------------------------------------------------------ | ---------------------------------- |
 | `--platform`     | Yes      | `sim`, `hw`                                                                          | Platform type                      |
-| `--trajectory`   | Yes      | `hover`, `yaw_only`, `circle_horz`, `circle_vert`, `fig8_horz`, `fig8_vert`, `helix`, `fig8_contraction` | Trajectory type                    |
+| `--trajectory`   | Yes      | `hover`, `yaw_only`, `circle_horz`, `circle_vert`, `fig8_horz`, `fig8_vert`, `helix`, `fig8_akash` | Trajectory type                    |
 | `--hover-mode`   | If hover | `1–8` (sim), `1–4` (hw)                                                              | Hover position                     |
 | `--double-speed` | No       | flag                                                                                 | Use 2× trajectory speed            |
 | `--short`        | No       | flag                                                                                 | Short `fig8_vert` variant          |
@@ -148,7 +148,7 @@ ros2 run nmpc_acados_px4 run_node \
 | `--log`          | No       | flag                                                                                 | Enable data logging                |
 | `--log-file`     | No       | string                                                                               | Custom log filename (no extension) |
 | `--pyjoules`     | No       | flag                                                                                 | Enable energy monitoring           |
-| `--ff`           | No       | flag                                                                                 | Mark log filename with `_ff` (only valid with `fig8_contraction`) |
+| `--ff`           | No       | flag                                                                                 | Mark log filename with `_ff` (only valid with `fig8_akash`) |
 
 ---
 
