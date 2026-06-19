@@ -18,7 +18,7 @@ This package was created during my PhD originally as a basis of comparison with 
 **[<kbd> <br> Approach <br> </kbd>](#approach)** 
 **[<kbd> <br> Usage <br> </kbd>](#usage)** 
 **[<kbd> <br> Acados Setup <br> </kbd>](#acados-setup)** 
-**[<kbd> <br> Mocap <br> </kbd>](#hardware-with-motion-capture)** 
+**[<kbd> <br> Mocap <br> </kbd>](#hardware-with-motion-capture)** 
 **[<kbd> <br> Papers <br> </kbd>](#papers-and-repositories)** 
 
 ---
