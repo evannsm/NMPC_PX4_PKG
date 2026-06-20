@@ -80,6 +80,7 @@ class OffboardControl(Node):
         self.sim = platform_type == PlatformType.SIM
         self.platform_type = platform_type
         self.feedforward = feedforward
+        self.compute_time = 0.0  # set each control step; init so the data-log timer can't AttributeError before the first solve
         self.trajectory_type = trajectory
         self.hover_mode = hover_mode
         self.double_speed = double_speed
