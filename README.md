@@ -7,7 +7,7 @@
 
 A ROS 2 Nonlinear Model Predictive Controller (NMPC) for quadrotors using the [Acados](https://docs.acados.org/) solver. Formulates the tracking problem with an error-based cost in Euler angle representation and uses `atan2`-based yaw wrapping for correct angular error computation.
 
-This package was created during my PhD originally as a basis of comparison with the well-established NMPC technique in order to make useful comparisons against novel control strategies (namely, Newton-Raphson Flow) developed at Georgia Tech's FACTSLab. We have compared this against the Newton-Raphson controller available in [`NRFlow_PX4_PKG`](https://github.com/evannsmc/NRFlow_PX4_PKG).
+This package was created during my PhD originally as a basis of comparison with the well-established NMPC technique in order to make useful comparisons against novel control strategies (namely, Newton-Raphson Flow) developed at Georgia Tech's FACTSLab. We have compared this against the Newton-Raphson controller available in [`newton_raphson_px4`](https://github.com/evannsmc/newton_raphson_px4).
 
 <div align="center">
 
@@ -34,7 +34,7 @@ This package was created during my PhD originally as a basis of comparison with 
 - [Cost Weights](#cost-weights)
 - [Usage](#usage)
   - [CLI Options](#cli-options)
-- [Feedforward for `fig8_akash`](#feedforward-for-fig8_akash)
+- [Feedforward for `fig8_contraction`](#feedforward-for-fig8_contraction)
 - [Dependencies](#dependencies)
 - [Package Structure](#package-structure)
 - [Installation](#installation)
@@ -121,9 +121,9 @@ ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_horz
 # Hardware flight with logging
 ros2 run nmpc_acados_px4 run_node --platform hw --trajectory helix --log
 
-# fig8_akash with feedforward, logged with _ff marker in filename
-ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_akash --ff --log
-# -> logs to: sim_nmpc_acados_px4_fig8_akash_ff_1x.csv
+# fig8_contraction with feedforward, logged with _ff marker in filename
+ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_contraction --ff --log
+# -> logs to: sim_nmpc_acados_px4_fig8_contraction_ff_1x.csv
 ```
 
 ### CLI Options
@@ -139,11 +139,11 @@ ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_akash --ff --
 | `--short`                                       | Short variant (fig8_vert)                                      |
 | `--spin`                                        | Enable yaw rotation                                            |
 | `--flight-period SEC`                           | Custom flight duration                                         |
-| `--ff`                                          | Mark log filename with `_ff` (only valid with `fig8_akash`) |
+| `--ff`                                          | Mark log filename with `_ff` (only valid with `fig8_contraction`) |
 
-## Feedforward for `fig8_akash`
+## Feedforward for `fig8_contraction`
 
-When the `fig8_akash` trajectory is selected, the node computes a differential-flatness feedforward over the full NMPC horizon at each control step, using the same approach as the contraction controller.
+When the `fig8_contraction` trajectory is selected, the node computes a differential-flatness feedforward over the full NMPC horizon at each control step.
 
 **How it works:**
 
