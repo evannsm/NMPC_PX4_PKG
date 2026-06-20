@@ -35,7 +35,6 @@ This package implements a well-established NMPC technique and was built during m
 - [Cost Weights](#cost-weights)
 - [Usage](#usage)
   - [CLI Options](#cli-options)
-- [Feedforward for `fig8_contraction`](#feedforward-for-fig8_contraction)
 - [Dependencies](#dependencies)
 - [Package Structure](#package-structure)
 - [Installation](#installation)
@@ -141,23 +140,6 @@ ros2 run nmpc_acados_px4 run_node --platform sim --trajectory fig8_contraction -
 | `--spin`                                        | Enable yaw rotation                                            |
 | `--flight-period SEC`                           | Custom flight duration                                         |
 | `--ff`                                          | Mark log filename with `_ff` (only valid with `fig8_contraction`) |
-
-## Feedforward for `fig8_contraction`
-
-When the `fig8_contraction` trajectory is selected, the node computes a differential-flatness feedforward over the full NMPC horizon at each control step.
-
-**How it works:**
-
-1. `generate_feedforward_trajectory` calls `flat_to_x_u` at each of the `N` horizon time steps via `jax.vmap`.
-2. `flat_to_x_u` differentiates the flat output `[px, py, pz, psi](t)` twice to recover:
-   - Velocity `[vx, vy, vz]`
-   - Specific thrust `f = sqrt(ax² + ay² + (az - g)²)` and Euler angles `[phi, th, psi]`
-   - A third differentiation yields `u_ff = [df, dphi, dth, dpsi]`
-3. The NMPC reference is updated per stage:
-   - **Euler reference** `[phi, th, psi]` comes from `x_ff` instead of `[0, 0, yaw]` — the NMPC now tracks the physically correct roll/pitch attitude the trajectory demands.
-   - **Control reference** `u_ref` = `[df, dphi, dth, dpsi]` is passed as the stage parameter instead of hover control — the cost penalizes deviation from the feedforward rates rather than from rest.
-
-This gives the NMPC a fully consistent reference trajectory in both state space and control space, rather than treating every stage as if hover is the desired input.
 
 ## Dependencies
 
