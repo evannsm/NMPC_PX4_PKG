@@ -2,12 +2,13 @@
 ![Status](https://img.shields.io/badge/Status-Hardware_Validated-blue)
 [![ROS 2 Compatible](https://img.shields.io/badge/ROS%202-Humble_%7C_Jazzy-blue)](https://docs.ros.org/)
 [![PX4 Compatible](https://img.shields.io/badge/PX4-Autopilot-pink)](https://github.com/PX4/PX4-Autopilot)
+[![Docker: PX4-ROS2-Docker](https://img.shields.io/badge/Docker-PX4--ROS2--Docker-2496ED?logo=docker&logoColor=white)](https://github.com/evannsmc/PX4-ROS2-Docker)
 [![Solver: ACADOS](https://img.shields.io/badge/Solver-ACADOS-brightgreen)](https://github.com/acados/acados)
 [![evannsmc.com](https://img.shields.io/badge/evannsmc.com-Project%20Page-blue)](https://www.evannsmc.com/projects/nmpc-acados)
 
 A ROS 2 Nonlinear Model Predictive Controller (NMPC) for quadrotors using the [Acados](https://docs.acados.org/) solver. Formulates the tracking problem with an error-based cost in Euler angle representation and uses `atan2`-based yaw wrapping for correct angular error computation.
 
-This package was created during my PhD originally as a basis of comparison with the well-established NMPC technique in order to make useful comparisons against novel control strategies (namely, Newton-Raphson Flow) developed at Georgia Tech's FACTSLab. We have compared this against the Newton-Raphson controller available in [`newton_raphson_px4`](https://github.com/evannsmc/newton_raphson_px4).
+This package implements a well-established NMPC technique and was built during my PhD at Georgia Tech's FACTSLab to serve as the **baseline** against which my novel control strategy — Newton-Raphson Flow — is benchmarked. See the [`newton_raphson_px4`](https://github.com/evannsmc/newton_raphson_px4) controller for that comparison.
 
 <div align="center">
 
